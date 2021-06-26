@@ -1,0 +1,10 @@
+node_modules
+.history
+dist
+.vscode
+mock
+tsconfig.json
+vue.config.js
+babel.config.js
+.eslintrc.js
+webstorm.config.js
