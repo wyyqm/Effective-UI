@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import { deepCopy } from "./utils/JsonFormUtils"
+import { deepCopy } from './utils/JsonFormUtils'
 
 export default {
-    name: "JsonForm",
+    name: 'JsonForm',
     components: {},
     props: {
         // 表单数据
@@ -20,14 +20,14 @@ export default {
             type: Object,
             default: () => {
                 return {}
-            },
+            }
         },
         // 表单配置
         elFormConfig: {
             type: Object,
             default: () => {
                 return {}
-            },
+            }
         },
         /*
         表单项配置
@@ -48,27 +48,27 @@ export default {
             type: Array,
             default: () => {
                 return []
-            },
-        },
+            }
+        }
     },
     data() {
         return {
             jsonFormData: this.formData ? deepCopy(this.formData) : {},
-            elFormRef: "jsonForm",
+            elFormRef: 'jsonForm'
         }
     },
     watch: {
         formData(newData) {
             // 避免内部修改jsonFormData数据时, 影响外部的formData, 保持prop的单项数据流
             this.jsonFormData = deepCopy(newData)
-        },
+        }
     },
     computed: {},
     created() {
-        console.log("组件 JsonForm 创建!")
+        console.log('组件 JsonForm 创建!')
     },
     updated() {
-        console.log("组件 JsonForm 更新!")
+        console.log('组件 JsonForm 更新!')
     },
     methods: {
         /**
@@ -99,9 +99,9 @@ export default {
          * @return {*}
          */
         itemShow(item) {
-            if (typeof item.show === "function") {
+            if (typeof item.show === 'function') {
                 return item.show(item, this.formData)
-            } else if (typeof item.show === "boolean") {
+            } else if (typeof item.show === 'boolean') {
                 return item.show
             } else {
                 return true
@@ -116,7 +116,7 @@ export default {
                 // 表单验证是否通过
                 valid: false,
                 // 校验未通过字段
-                errorFields: null,
+                errorFields: null
             }
             return new Promise((resolve) => {
                 formInstance.validate((valid, errorFields) => {
@@ -181,8 +181,8 @@ export default {
          */
         getElFormInstance() {
             return this.$refs[this.elFormRef]
-        },
-    },
+        }
+    }
 }
 </script>
 
