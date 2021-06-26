@@ -4,13 +4,13 @@ export default {
             type: Object,
             default: () => {
                 return {}
-            },
+            }
         },
         formData: {
             type: Object,
             default: () => {
                 return {}
-            },
-        },
-    },
+            }
+        }
+    }
 }

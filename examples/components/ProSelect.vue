@@ -14,17 +14,17 @@ const ProSelect = {
     name: 'ProSelect',
     model: {
         prop: 'selectedData',
-        event: 'changeSelected',
+        event: 'changeSelected'
     },
     mixins: [ProItemMixin],
     props: {
         selectedData: {
-            type: [String, Array, Number],
-        },
+            type: [String, Array, Number]
+        }
     },
     data() {
         return {
-            idx: buildIdx(),
+            idx: buildIdx()
         }
     },
     computed: {},
@@ -35,7 +35,7 @@ const ProSelect = {
     updated() {
         console.log('ProSelect 组件更新' + this.idx)
     },
-    methods: {},
+    methods: {}
 }
 ProSelect.install = function (Vue) {
     Vue.component(ProSelect.name, ProSelect)

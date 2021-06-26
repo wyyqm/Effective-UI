@@ -9,7 +9,7 @@
 
 <script>
 export default {
-    name: "Home",
+    name: 'Home',
     components: {},
     data() {
         return {
@@ -17,40 +17,40 @@ export default {
             editModel: 1,
             optType: 2,
             formData: {
-                name: "",
-                hobby: "",
-                sex: 1,
-            },
+                name: '',
+                hobby: '',
+                sex: 1
+            }
         }
     },
     computed: {
         formItemArrConfig() {
             const nameValidator = (rule, value, callback) => {
                 if (this.optType === 1) {
-                    if (value === undefined || value === null || value === "") {
-                        callback(new Error("请输入姓名!"))
+                    if (value === undefined || value === null || value === '') {
+                        callback(new Error('请输入姓名!'))
                         return
                     }
                 }
                 if (value.length > 3) {
-                    callback(new Error("姓名不能超过3字符!"))
+                    callback(new Error('姓名不能超过3字符!'))
                     return
                 }
                 callback()
             }
             const compNameMap = new Map()
             if (this.editModel === 1) {
-                compNameMap.set("name", "el-input")
-                compNameMap.set("hobby", "pro-select")
-                compNameMap.set("sex", "pro-select")
+                compNameMap.set('name', 'el-input')
+                compNameMap.set('hobby', 'pro-select')
+                compNameMap.set('sex', 'pro-select')
             } else if (this.editModel === 2) {
-                compNameMap.set("name", "el-input")
-                compNameMap.set("hobby", "pro-select")
-                compNameMap.set("sex", "CommView")
+                compNameMap.set('name', 'el-input')
+                compNameMap.set('hobby', 'pro-select')
+                compNameMap.set('sex', 'CommView')
             } else {
-                compNameMap.set("name", "CommView")
-                compNameMap.set("hobby", "CommView")
-                compNameMap.set("sex", "CommView")
+                compNameMap.set('name', 'CommView')
+                compNameMap.set('hobby', 'CommView')
+                compNameMap.set('sex', 'CommView')
             }
             const sexShowValue = (item, formData) => {
                 const itemValue = formData.sex
@@ -58,35 +58,35 @@ export default {
                 if (idx >= 0) {
                     return item.cusData[idx].label
                 }
-                return itemValue ? itemValue : ""
+                return itemValue ? itemValue : ''
             }
             return [
-                { prop: "name", compName: compNameMap.get("name"), label: "姓名", rules: [{ required: true, validator: nameValidator }] },
+                { prop: 'name', compName: compNameMap.get('name'), label: '姓名', rules: [{ required: true, validator: nameValidator }] },
                 {
-                    prop: "hobby",
-                    compName: compNameMap.get("hobby"),
-                    label: "爱好",
+                    prop: 'hobby',
+                    compName: compNameMap.get('hobby'),
+                    label: '爱好',
                     cusData: [
-                        { label: "篮球", value: 1 },
-                        { label: "足球", value: 2 },
+                        { label: '篮球', value: 1 },
+                        { label: '足球', value: 2 }
                     ],
                     elCompProps: {
-                        multiple: true,
-                    },
+                        multiple: true
+                    }
                 },
                 {
-                    prop: "sex",
-                    compName: compNameMap.get("sex"),
-                    label: "性别",
+                    prop: 'sex',
+                    compName: compNameMap.get('sex'),
+                    label: '性别',
                     showValue: sexShowValue,
                     cusData: [
-                        { label: "男", value: 1 },
-                        { label: "女", value: 2 },
+                        { label: '男', value: 1 },
+                        { label: '女', value: 2 }
                     ],
-                    elCompProps: {},
-                },
+                    elCompProps: {}
+                }
             ]
-        },
-    },
+        }
+    }
 }
 </script>

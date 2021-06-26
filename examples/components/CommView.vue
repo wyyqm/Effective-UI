@@ -3,9 +3,9 @@
 </template>
 
 <script>
-import { ProItemMixin } from "../../packages/json-form/index"
+import { ProItemMixin } from '../../packages/json-form/index'
 const CommView = {
-    name: "CommView",
+    name: 'CommView',
     mixins: [ProItemMixin],
     props: {},
     data() {
@@ -18,16 +18,16 @@ const CommView = {
             } else {
                 return this.formData[this.item.prop]
             }
-        },
+        }
     },
     watch: {},
     created() {
-        console.log("CommView 组件创建")
+        console.log('CommView 组件创建')
     },
     updated() {
-        console.log("CommView 组件更新")
+        console.log('CommView 组件更新')
     },
-    methods: {},
+    methods: {}
 }
 CommView.install = function (Vue) {
     Vue.component(CommView.name, CommView)
