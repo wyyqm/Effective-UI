@@ -1,5 +1,11 @@
 # element-ui-extends
 
+## 作用
+
+对 `element-ui 2.x` 进行扩展, 新增如下组件:
+
+-   JsonForm: 用于通过定义 json 对象的方式, 动态创建表单
+
 ## Project setup
 
 ```
