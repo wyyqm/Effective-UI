@@ -15,22 +15,27 @@ export default {
     name: 'JsonForm',
     components: {},
     props: {
-        // 表单数据
+        /**
+         * 表单数据
+         */
         formData: {
             type: Object,
             default: () => {
                 return {}
             }
         },
-        // 表单配置
+        /**
+         * 表单配置
+         */
         elFormConfig: {
             type: Object,
             default: () => {
                 return {}
             }
         },
-        /*
+        /**
         表单项配置
+        <pre>
         [
             {
                 prop:string, // 该值将用于el-form-item的props和key
@@ -43,6 +48,7 @@ export default {
                 cusEvents:object, // 用于配置自定义组件额外的event事件监听(如果直接使用的element-ui组件,那么请将element-ui组件支持的event写在该对象)
             }
         ]
+        </pre>
         */
         formItemArrConfig: {
             type: Array,
