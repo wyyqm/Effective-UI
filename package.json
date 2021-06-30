@@ -22,9 +22,9 @@
     "vue": "^2.6.11"
   },
   "dependencies": {
-    "vuepress": "^1.8.2"
   },
   "devDependencies": {
+    "vuepress": "^1.8.2",
     "@babel/core": "^7.14.6",
     "@storybook/addon-actions": "^6.3.0",
     "@storybook/addon-essentials": "^6.3.0",
