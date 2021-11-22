@@ -58,7 +58,7 @@ export default {
         if (idx >= 0) {
           return item.cusData[idx].label
         }
-        return itemValue ? itemValue : ''
+        return itemValue || ''
       }
       return [
         { prop: 'name', compName: compNameMap.get('name'), label: '姓名', rules: [{ required: true, validator: nameValidator }] },

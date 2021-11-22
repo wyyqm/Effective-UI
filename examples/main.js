@@ -11,6 +11,9 @@ import ElementExtends from '../src/index'
 import ProSelect from './components/ProSelect.vue'
 import CommView from './components/CommView.vue'
 
+import '@tuya-fe/full-ui/lib/theme-chalk/index.css'
+import './assets/common.css'
+import './assets/commonPage.less'
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
