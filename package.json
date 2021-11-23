@@ -1,8 +1,8 @@
 {
-  "name": "element-ui-extends",
+  "name": "effectiveUI",
   "version": "0.1.1",
   "private": false,
-  "main": "lib/element-ui-extends.umd.min.js",
+  "main": "lib/effectiveUI.umd.min.js",
   "files": [
     "lib/*.js",
     "packages"
@@ -11,7 +11,7 @@
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "lib": "vue-cli-service build --target lib --name element-ui-extends --dest lib src/index.js",
+    "lib": "vue-cli-service build --target lib --name effectiveUI --dest lib src/index.js",
     "storybook": "start-storybook -s ./storybook-public -p 6006",
     "build-storybook": "build-storybook -s storybook-public",
     "docs:dev": "vuepress dev docs",
