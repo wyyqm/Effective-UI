@@ -5,11 +5,38 @@
         <el-form-item label="订单编号：">
           <el-input v-model="searchForm.id" clearable />
         </el-form-item>
+        <el-form-item label="订单编号：">
+          <el-input v-model="searchForm.id" clearable />
+        </el-form-item>
+        <el-form-item label="订单编号：">
+          <el-input v-model="searchForm.id" clearable />
+        </el-form-item>
+        <el-form-item label="订单编号：">
+          <el-input v-model="searchForm.id" clearable />
+        </el-form-item>
+        <el-form-item label="查询时间：">
+          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
+        </el-form-item>
+        <el-form-item label="查询时间：">
+          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
+        </el-form-item>
+        <el-form-item label="查询时间：">
+          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
+        </el-form-item>
         <el-form-item label="查询时间：">
           <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
         </el-form-item>
         <el-form-item label="开始时间：">
-          <el-date-picker clearable v-model="searchForm.times" type="daterange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" style="width: 250px"> </el-date-picker>
+          <el-date-picker
+            clearable
+            v-model="searchForm.times"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            style="width: 250px"
+          >
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="订单地区：">
           <el-select size="small" placeholder="请选择" v-model="searchForm.billArea">
@@ -26,14 +53,24 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
+          <el-button type="primary" @click="handleSearch" plain icon="el-icon-refresh-right"> 重置 </el-button>
           <!-- :disabled="!total" -->
           <el-button type="primary" @click="add" icon="el-icon-plus"> 新建 </el-button>
           <el-button type="primary" @click="educed" :loading="exportLoading" plain icon="el-icon-download"> 导出 </el-button>
+
           <el-button type="primary" @click="dialogVisible = true" plain> 批量删除 </el-button>
         </el-form-item>
       </el-form>
     </div>
-    <Table></Table>
+    <Table
+      :height="scrollHeight"
+      :params="params"
+      :tableData="tableData"
+      :loading="loading"
+      :total="total"
+      @loadingChange="loadingChange"
+      @tableDataChange="tableDataChange"
+    ></Table>
     <div>
       <Pagination />
     </div>
@@ -58,6 +95,7 @@ export default {
   },
   data() {
     return {
+      scrollHeight: 0,
       searchForm: {
         date: '',
         billArea: 'AZ',
@@ -70,6 +108,47 @@ export default {
       exportLoading: false,
       delLoading: false,
       dialogVisible: false,
+      expend: false,
+      tableData: [
+        {
+          date: '1624422008016',
+          orderName: '王小虎',
+          orderId: 'FW123456789',
+          status: '0',
+          switch: false,
+          address: '上海市普陀区金沙江路 1518 弄wwwwwwwww',
+          src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        },
+
+        {
+          date: '1622332005416',
+          orderName: '王小虎',
+          orderId: 'FW123456789',
+          status: '1',
+          switch: false,
+          address: '上海市普陀区金沙江路 1518 弄erewr东风二二',
+          src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        },
+
+        {
+          date: '1542622008016',
+          orderName: '王小虎',
+          orderId: 'FW123456789',
+          status: '0',
+          switch: true,
+          address: '上海市普陀区金沙江路 1518 弄搜房网二辅导费都发给我而为',
+          src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        },
+
+        {
+          date: '1623422008016',
+          orderName: '王小虎',
+          orderId: 'FW123456789',
+          status: '1',
+          switch: true,
+          address: '上海市普陀区金沙江路 1518 弄的烦都烦死范围'
+        }
+      ],
       billArea: [
         {
           label: '美国区',
@@ -95,6 +174,21 @@ export default {
       loading: false
     }
   },
+
+  mounted() {
+    const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+    // console.log(searchHeight)
+
+    this.scrollHeight = document.body.clientHeight - searchHeight - 80 - 45
+
+    // window.onresize = () => {
+    //   return (() => {
+    //     console.log(this.scrollHeight, searchHeight)
+    //   })()
+
+    // this.scrollHeight = document.body.clientHeight - searchHeight - 130 - 45
+    // }
+  },
   methods: {
     // 搜索
     handleSearch() {
@@ -103,6 +197,12 @@ export default {
     // 搜索条件change
     selectChange() {
       this.searchForm.searchVal = ''
+    },
+    loadingChange(val) {
+      this.loading = val
+    },
+    billDataChange(val) {
+      this.billData = val
     },
     // 新建
     add() {},
