@@ -5,13 +5,14 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 100%"
-      :loading="loading"
+      v-loading="loading"
       @selection-change="handleSelectionChange"
       @sort-change="sort"
       :max-height="scrollHeight"
+      :row-key="getRowKeys"
       stripe
     >
-      <el-table-column type="selection"> </el-table-column>
+      <el-table-column type="selection" reserve-selection="true"> </el-table-column>
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
@@ -26,7 +27,7 @@
       </el-table-column>
       <el-table-column label="状态列">
         <template slot-scope="scope">
-          <span style="color: #f56c6c" v-if="scope.row.status === '0'">未支付</span>
+          <span style="color: #f56c6c" v-if="scope.row.status === 0">未支付</span>
           <span style="color: #67c23a" v-else>已支付</span>
         </template>
       </el-table-column>
@@ -48,6 +49,19 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="pagination">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 50, 100, 200]"
+        :page-size="2"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        background
+      >
+      </el-pagination>
+    </div>
     <!-- 编辑可以尝试用抽屉 -->
     <el-drawer title="编辑订单" :visible.sync="editVisible" :direction="'rtl'" :wrapperClosable="false" size="600px">
       <span>我来啦!</span>
@@ -58,47 +72,126 @@
 <script>
 import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
+// import Mock from 'mockjs'
 export default {
   name: 'searchRow',
   components: {
     TyImagePreview
   },
   props: {
-    params: {
-      type: Object,
-      default: () => {}
-    },
     height: {
       type: Number,
       default: 0
-    },
-    tableData: {
-      type: Array,
-      default: () => []
-    },
-    loading: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
       scrollHeight: null,
-
+      loading: false,
+      total: 0,
+      tableData: [
+        // {
+        //   date: '1624422008016',
+        //   orderName: '王小虎',
+        //   orderId: 'FW123456789',
+        //   status: '0',
+        //   switch: false,
+        //   address: '上海市普陀区金沙江路 1518 弄wwwwwwwww',
+        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        // },
+        // {
+        //   date: '1622332005416',
+        //   orderName: '王小虎',
+        //   orderId: 'FW123456789',
+        //   status: '1',
+        //   switch: false,
+        //   address: '上海市普陀区金沙江路 1518 弄erewr东风二二',
+        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        // },
+        // {
+        //   date: '1542622008016',
+        //   orderName: '王小虎',
+        //   orderId: 'FW123456789',
+        //   status: '0',
+        //   switch: true,
+        //   address: '上海市普陀区金沙江路 1518 弄搜房网二辅导费都发给我而为',
+        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+        // },
+        // {
+        //   date: '1623422008016',
+        //   orderName: '王小虎',
+        //   orderId: 'FW123456789',
+        //   status: '1',
+        //   switch: true,
+        //   address: '上海市普陀区金沙江路 1518 弄的烦都烦死范围'
+        // }
+      ],
       multipleSelection: [],
-      editVisible: false
+      selectedData: [],
+      editVisible: false,
+      currentPage: 1
     }
   },
 
-  watch: {
-    height(newVal) {
-      this.scrollHeight = newVal
+  // watch: {
+  //   height(newVal) {
+  //     this.scrollHeight = newVal
+  //   }
+  // },
+  mounted() {
+    const params = {
+      currentPage: this.currentPage
     }
+    this.init(params)
+    const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+    this.scrollHeight = document.body.clientHeight - searchHeight - 80 - 45
   },
   methods: {
+    init(params) {
+      this.loading = true
+
+      this.$axios({
+        url: '/parameter/query',
+        method: 'get',
+        params: {
+          pageIndex: params.currentPage,
+          pageSize: 5
+        }
+      }).then((res) => {
+        this.loading = false
+
+        this.tableData = res.data.data.content
+        this.currentPage = res.data.data.pageIndex
+        this.total = res.data.data.total
+      })
+    },
+    // 反选参数
+    getRowKeys(row) {
+      return row.orderId
+    },
+
+    // 分页选中
+    toggleSelection() {
+      console.log(this.selectedData)
+      this.tableData.forEach((item) => {
+        this.selectedData.forEach((ele) => {
+          if (item.orderId === ele.orderId) {
+            this.$refs.multipleTable.toggleRowSelection(item)
+          }
+        })
+      })
+    },
+    // 当前页选中
     handleSelectionChange(val) {
-      console.log(val)
       this.multipleSelection = val
+      this.selectedData = []
+      if (val) {
+        val.forEach((row) => {
+          if (row) {
+            this.selectedData.push(val[0])
+          }
+        })
+      }
     },
     delCur(val) {
       console.log(val)
@@ -117,6 +210,20 @@ export default {
     },
     onClose() {
       console.log('close')
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      const params = {
+        currentPage: val
+      }
+      this.init(params)
+      this.toggleSelection()
+      // 翻页回到表格顶部
+      this.$nextTick(() => {
+        this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+      })
     }
   }
 }

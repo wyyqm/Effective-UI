@@ -14,8 +14,11 @@ import CommView from './components/CommView.vue'
 import '@tuya-fe/full-ui/lib/theme-chalk/index.css'
 import './assets/common.css'
 import './assets/commonPage.less'
-Vue.config.productionTip = false
+import axios from 'axios'
 
+Vue.config.productionTip = false
+Vue.prototype.$axios = axios
+if (process.env.NODE_ENV !== 'production') require('../utils/index')
 Vue.use(ElementUI)
 Vue.use(ElementExtends)
 
