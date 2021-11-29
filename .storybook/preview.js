@@ -1,8 +1,11 @@
 // 让storybook能够识别第三方依赖. 如: element-ui
 import Vue from 'vue'
-import ElementUI from 'element-ui'
+import ElementUI from '@tuya-fe/full-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import '../examples/assets/common.css'
+import '../examples/assets/commonPage.less'
 Vue.use(ElementUI)
+Vue.prototype.$ELEMENT = { size: 'small' }
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

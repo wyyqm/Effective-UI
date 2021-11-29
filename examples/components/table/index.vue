@@ -72,7 +72,6 @@
 <script>
 import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
-// import Mock from 'mockjs'
 export default {
   name: 'searchRow',
   components: {
@@ -89,43 +88,7 @@ export default {
       scrollHeight: null,
       loading: false,
       total: 0,
-      tableData: [
-        // {
-        //   date: '1624422008016',
-        //   orderName: '王小虎',
-        //   orderId: 'FW123456789',
-        //   status: '0',
-        //   switch: false,
-        //   address: '上海市普陀区金沙江路 1518 弄wwwwwwwww',
-        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-        // },
-        // {
-        //   date: '1622332005416',
-        //   orderName: '王小虎',
-        //   orderId: 'FW123456789',
-        //   status: '1',
-        //   switch: false,
-        //   address: '上海市普陀区金沙江路 1518 弄erewr东风二二',
-        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-        // },
-        // {
-        //   date: '1542622008016',
-        //   orderName: '王小虎',
-        //   orderId: 'FW123456789',
-        //   status: '0',
-        //   switch: true,
-        //   address: '上海市普陀区金沙江路 1518 弄搜房网二辅导费都发给我而为',
-        //   src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-        // },
-        // {
-        //   date: '1623422008016',
-        //   orderName: '王小虎',
-        //   orderId: 'FW123456789',
-        //   status: '1',
-        //   switch: true,
-        //   address: '上海市普陀区金沙江路 1518 弄的烦都烦死范围'
-        // }
-      ],
+      tableData: [],
       multipleSelection: [],
       selectedData: [],
       editVisible: false,
@@ -133,11 +96,6 @@ export default {
     }
   },
 
-  // watch: {
-  //   height(newVal) {
-  //     this.scrollHeight = newVal
-  //   }
-  // },
   mounted() {
     const params = {
       currentPage: this.currentPage

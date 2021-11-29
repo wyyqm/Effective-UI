@@ -22,6 +22,7 @@ if (process.env.NODE_ENV !== 'production') require('../utils/index')
 Vue.use(ElementUI)
 Vue.use(ElementExtends)
 
+Vue.prototype.$ELEMENT = { size: 'small' }
 // 将表单项组件全局注册, 这样JsonForm组件中才能使用到外部自定义的表单项组件
 // Vue.use(ProSelect)
 // Vue.use(CommView)

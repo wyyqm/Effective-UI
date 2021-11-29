@@ -25,5 +25,13 @@ module.exports = {
         }
       }
     }
-  ]
+  ],
+  webpackFinal: async (config, { configType }) => {
+    config.module.rules.push({
+      test: /.less$/,
+      use: ['style-loader', 'css-loader', 'less-loader']
+    })
+
+    return config
+  }
 }

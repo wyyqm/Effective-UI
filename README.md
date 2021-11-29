@@ -4,7 +4,10 @@
 
 对 `element-ui 2.x` 进行扩展, 新增如下组件:
 
--   JsonForm: 用于通过定义 json 对象的方式, 动态创建表单
+-   ButtoUnion: 常用按钮合集
+-   InputUnion: 常用输入框合集
+-   SelectUnion: 常用下拉框合集
+-   DatePickerUnion: 常用日期选择器合集
 
 ## Project setup
 
