@@ -33,6 +33,7 @@
     "@storybook/addon-storysource": "^6.3.0",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/vue": "^6.3.0",
+    "@tuya-fe/ty-async-button": "^1.2.0",
     "@tuya-fe/ty-image-preview": "^1.0.3",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",

@@ -4,7 +4,7 @@
       <el-header class="header">Header</el-header>
       <el-container>
         <el-aside width="220px" class="aside">
-          <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+          <el-menu default-active="1" class="el-menu-vertical-demo">
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-setting"></i>

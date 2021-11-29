@@ -12,7 +12,7 @@
       :row-key="getRowKeys"
       stripe
     >
-      <el-table-column type="selection" reserve-selection="true"> </el-table-column>
+      <el-table-column type="selection" :reserve-selection="true"> </el-table-column>
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">

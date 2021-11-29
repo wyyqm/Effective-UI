@@ -5,6 +5,8 @@ function resolve(dir) {
 }
 
 module.exports = {
+
+  runtimeCompiler: true,
     // 修改webpack的入口为: examples/main.js
     pages: {
         index: {
