@@ -17,9 +17,9 @@ const result = Mock.mock(data).list
 // 对外输出对应的数据接口
 export default {
   'get|/parameter/query': (params) => {
-    console.log(params)
     const info = getQueryVariable(params.url)
-    const [index, size] = [info.pageIndex, info.pageSize]
+    console.log(info)
+    const [index, size] = [Number(info.pageIndex), Number(info.pageSize)]
     const newDataList = index > 1 ? result.slice((index - 1) * size, index * size) : result.slice(0, index * size)
     return {
       status: 200,

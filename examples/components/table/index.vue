@@ -54,8 +54,8 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[2, 50, 100, 200]"
-        :page-size="2"
+        :page-sizes="[5, 10, 20, 50]"
+        :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         background
@@ -92,13 +92,15 @@ export default {
       multipleSelection: [],
       selectedData: [],
       editVisible: false,
-      currentPage: 1
+      currentPage: 1,
+      pageSize: 5
     }
   },
 
   mounted() {
     const params = {
-      currentPage: this.currentPage
+      currentPage: this.currentPage,
+      pageSize: this.pageSize
     }
     this.init(params)
     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
@@ -113,7 +115,7 @@ export default {
         method: 'get',
         params: {
           pageIndex: params.currentPage,
-          pageSize: 5
+          pageSize: params.pageSize
         }
       }).then((res) => {
         this.loading = false
@@ -171,10 +173,21 @@ export default {
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
+      const params = {
+        pageSize: val,
+        currentPage: 1
+      }
+      this.init(params)
+      this.toggleSelection()
+      // 翻页回到表格顶部
+      this.$nextTick(() => {
+        this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+      })
     },
     handleCurrentChange(val) {
       const params = {
-        currentPage: val
+        currentPage: val,
+        pageSize: this.pageSize
       }
       this.init(params)
       this.toggleSelection()
