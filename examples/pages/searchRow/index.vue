@@ -5,21 +5,6 @@
         <el-form-item label="订单编号：">
           <el-input v-model="searchForm.id" clearable />
         </el-form-item>
-        <el-form-item label="订单编号：">
-          <el-input v-model="searchForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="订单编号：">
-          <el-input v-model="searchForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="订单编号：">
-          <el-input v-model="searchForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="查询时间：">
-          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
-        </el-form-item>
-        <el-form-item label="查询时间：">
-          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
-        </el-form-item>
         <el-form-item label="查询时间：">
           <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
         </el-form-item>
@@ -54,18 +39,15 @@
         <el-form-item>
           <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
           <el-button type="primary" @click="handleSearch" plain icon="el-icon-refresh-right"> 重置 </el-button>
-          <!-- :disabled="!total" -->
           <el-button type="primary" @click="add" icon="el-icon-plus"> 新建 </el-button>
           <el-button type="primary" @click="educed" :loading="exportLoading" plain icon="el-icon-download"> 导出 </el-button>
 
           <el-button type="primary" @click="dialogVisible = true" plain> 批量删除 </el-button>
+          <el-button type="text" v-if="hasMore" @click="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
         </el-form-item>
       </el-form>
     </div>
-    <Table></Table>
-    <div>
-      <!-- <Pagination /> -->
-    </div>
+    <Table :height="scrollHeight"></Table>
     <el-dialog :visible.sync="dialogVisible" width="30%">
       <span> <i class="el-icon-warning" style="color: orange; margin-right: 5px"></i>确认批量删除所选内容吗？ </span>
       <span slot="footer" class="dialog-footer">
@@ -87,7 +69,8 @@ export default {
   },
   data() {
     return {
-      scrollHeight: 0,
+      expend: false,
+      hasMore: false,
       searchForm: {
         date: '',
         billArea: 'AZ',
@@ -100,8 +83,6 @@ export default {
       exportLoading: false,
       delLoading: false,
       dialogVisible: false,
-      expend: false,
-
       billArea: [
         {
           label: '美国区',
@@ -124,25 +105,55 @@ export default {
           value: 'WE'
         }
       ],
-      loading: false
+      loading: false,
+      clientHeight: document.body.clientHeight,
+      scrollHeight: document.body.clientHeight
     }
   },
 
   mounted() {
+    this.toggleExpend()
     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-    // console.log(searchHeight)
-
-    this.scrollHeight = document.body.clientHeight - searchHeight - 80 - 45
-
-    // window.onresize = () => {
-    //   return (() => {
-    //     console.log(this.scrollHeight, searchHeight)
-    //   })()
-
-    // this.scrollHeight = document.body.clientHeight - searchHeight - 130 - 45
-    // }
+    // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
+    this.scrollHeight = this.clientHeight - searchHeight - 125
+    const that = this
+    // 大、小屏幕切换，页面自适应
+    window.onresize = () => {
+      return (() => {
+        const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+        window.clientHeight = document.body.clientHeight
+        that.clientHeight = window.clientHeight
+        this.scrollHeight = that.clientHeight - searchHeight - 80 - 45
+      })()
+    }
+  },
+  watch: {
+    expend() {
+      // 展开收起的时候 表格高度要自适应可视区域
+      const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+      // 表格滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
+      this.scrollHeight = this.clientHeight - searchHeight - 125
+    }
   },
   methods: {
+    // 展开收起
+    toggleExpend() {
+      this.expend = !this.expend
+      const searchItem = document.querySelectorAll('.el-form-item--small')
+      if (searchItem.length > 4) {
+        // 搜索条件小于等于三个不展示展开收起
+        this.hasMore = true
+        searchItem.forEach((ele, i) => {
+          if (i > 2 && i < searchItem.length - 1) {
+            if (this.expend) {
+              ele.setAttribute('style', 'display: none')
+            } else {
+              ele.setAttribute('style', 'display: inline-block')
+            }
+          }
+        })
+      }
+    },
     // 搜索
     handleSearch() {
       console.log(this.searchForm)

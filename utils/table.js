@@ -9,7 +9,7 @@ const data = {
       orderId: '@natural(1231231232,9786723424)',
       status: '@integer(0,1)',
       switch: '@boolean()',
-      address: '@city(10,20)' + '@cword(2)' + '有限公司'
+      address: '@city(10,20)' + '@cword(10)' + '有限公司'
     }
   ]
 }
@@ -18,7 +18,6 @@ const result = Mock.mock(data).list
 export default {
   'get|/parameter/query': (params) => {
     const info = getQueryVariable(params.url)
-    console.log(info)
     const [index, size] = [Number(info.pageIndex), Number(info.pageSize)]
     const newDataList = index > 1 ? result.slice((index - 1) * size, index * size) : result.slice(0, index * size)
     return {

@@ -8,7 +8,7 @@
       v-loading="loading"
       @selection-change="handleSelectionChange"
       @sort-change="sort"
-      :max-height="scrollHeight"
+      :max-height="height"
       :row-key="getRowKeys"
       stripe
     >
@@ -45,7 +45,9 @@
             <el-button slot="reference" type="text">删除</el-button>
           </el-popconfirm>
           <el-divider direction="vertical"></el-divider>
-          <el-button type="text" @click="editVisible = true">审核</el-button>
+          <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
+            <el-button slot="reference" type="text">审核</el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -85,7 +87,6 @@ export default {
   },
   data() {
     return {
-      scrollHeight: null,
       loading: false,
       total: 0,
       tableData: [],
@@ -103,13 +104,12 @@ export default {
       pageSize: this.pageSize
     }
     this.init(params)
-    const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-    this.scrollHeight = document.body.clientHeight - searchHeight - 80 - 45
   },
+
   methods: {
     init(params) {
       this.loading = true
-
+      // mock.js
       this.$axios({
         url: '/parameter/query',
         method: 'get',
@@ -132,7 +132,6 @@ export default {
 
     // 分页选中
     toggleSelection() {
-      console.log(this.selectedData)
       this.tableData.forEach((item) => {
         this.selectedData.forEach((ele) => {
           if (item.orderId === ele.orderId) {
