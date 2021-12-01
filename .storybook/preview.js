@@ -4,8 +4,11 @@ import ElementUI from '@tuya-fe/full-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../examples/assets/common.css'
 import '../examples/assets/commonPage.less'
+import axios from 'axios'
+import '../utils/index'
 Vue.use(ElementUI)
 Vue.prototype.$ELEMENT = { size: 'small' }
+Vue.prototype.$axios = axios
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

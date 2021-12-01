@@ -38,7 +38,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
-          <el-button type="primary" @click="handleSearch" plain icon="el-icon-refresh-right"> 重置 </el-button>
+          <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
           <el-button type="primary" @click="add" icon="el-icon-plus"> 新建 </el-button>
           <el-button type="primary" @click="educed" :loading="exportLoading" plain icon="el-icon-download"> 导出 </el-button>
 
@@ -158,6 +158,8 @@ export default {
     handleSearch() {
       console.log(this.searchForm)
     },
+    // 重置
+    reset() {},
     // 搜索条件change
     selectChange() {
       this.searchForm.searchVal = ''
