@@ -15,7 +15,8 @@
     "storybook": "start-storybook -s ./storybook-public -p 6006",
     "build-storybook": "build-storybook -s storybook-public",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs",
+    "chromatic": "npx chromatic --project-token=3cc2f26bf96d"
   },
   "peerDependencies": {
     "core-js": "^3.6.5",
@@ -48,6 +49,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "chromatic": "^6.1.0",
     "core-js": "^3.6.5",
     "css-loader": "5.2.6",
     "element-ui": "^2.15.2",
