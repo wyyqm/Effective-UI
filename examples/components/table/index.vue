@@ -8,7 +8,7 @@
       v-loading="loading"
       @selection-change="handleSelectionChange"
       @sort-change="sort"
-      :max-height="height"
+      :max-height="height ? height : 500"
       :row-key="getRowKeys"
       stripe
     >
@@ -17,7 +17,7 @@
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
           <div v-if="scope.row.src">
-            <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 160px" />
+            <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 100px" />
           </div>
           <div v-else>--</div>
         </template>
@@ -27,8 +27,10 @@
       </el-table-column>
       <el-table-column label="状态列">
         <template slot-scope="scope">
-          <span style="color: #f56c6c" v-if="scope.row.status === 0">未支付</span>
-          <span style="color: #67c23a" v-else>已支付</span>
+          <span v-if="scope.row.status === 0">
+            <ty-span color="#f56c6c">未支付</ty-span>
+          </span>
+          <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
         </template>
       </el-table-column>
       <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
@@ -39,15 +41,19 @@
       </el-table-column>
       <el-table-column prop="handle" label="操作">
         <template slot-scope="scope">
-          <el-button type="text" @click="editVisible = true">编辑</el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
-            <el-button slot="reference" type="text">删除</el-button>
-          </el-popconfirm>
-          <el-divider direction="vertical"></el-divider>
-          <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
-            <el-button slot="reference" type="text">审核</el-button>
-          </el-popconfirm>
+          <ef-table-operate>
+            <template v-slot:tableOperate>
+              <el-button type="text">编辑</el-button>
+              <!-- <el-divider direction="vertical"></el-divider> -->
+              <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
+                <el-button slot="reference" type="text">删除</el-button>
+              </el-popconfirm>
+              <!-- <el-divider direction="vertical"></el-divider> -->
+              <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
+                <el-button slot="reference" type="text">审核</el-button>
+              </el-popconfirm>
+            </template>
+          </ef-table-operate>
         </template>
       </el-table-column>
     </el-table>
@@ -64,20 +70,20 @@
       >
       </el-pagination>
     </div>
-    <!-- 编辑可以尝试用抽屉 -->
-    <el-drawer title="编辑订单" :visible.sync="editVisible" :direction="'rtl'" :wrapperClosable="false" size="600px">
-      <span>我来啦!</span>
-    </el-drawer>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
+import TySpan from '@tuya-fe/ty-span'
+import EfTableOperate from '../ef-table-operate/index.vue'
 export default {
   name: 'searchRow',
   components: {
-    TyImagePreview
+    EfTableOperate,
+    TyImagePreview,
+    TySpan
   },
   props: {
     height: {
@@ -92,7 +98,6 @@ export default {
       tableData: [],
       multipleSelection: [],
       selectedData: [],
-      editVisible: false,
       currentPage: 1,
       pageSize: 5
     }

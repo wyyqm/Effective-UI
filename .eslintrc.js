@@ -16,12 +16,14 @@ module.exports = {
     'standard'
   ],
   // required to lint *.vue files
-  plugins: ['vue'],
+  plugins: ['vue','html'],
   // add your custom rules here
   rules: {
+    "no-unused-vars": 0,
     'space-before-function-paren': 'off',
     'generator-star-spacing': 'off',
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'arrow-parens': 0,
   }
 }
