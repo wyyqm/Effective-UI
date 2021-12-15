@@ -1,32 +1,32 @@
 <template>
   <div>
-    <ty-selection-logic class="table" v-model="cart" key-by="id" :list="sell">
-      <template slot-scope="{ isSelected, all, toggle }">
-        <el-table :data="sell" size="mini" @row-click="toggle($event.id)" stripe>
-          <el-table-column width="40">
-            <!--顶部全选 slot-scope="_" 不能省略-->
-            <!-- <template slot="header"> -->
-            <template slot="header" slot-scope="{}">
-              <el-checkbox v-model="all.isSelected" :indeterminate="all.indeterminate" />
-            </template>
-            <template slot-scope="{ row }">
-              <!--@click.native.stop 是为了避免冒泡，触发 row-click 事件-->
-              <el-checkbox v-model="isSelected[row.id]" @click.native.stop />
-            </template>
-          </el-table-column>
-          <el-table-column label="商品 ID" prop="id" />
-          <el-table-column label="商品名称" prop="name" />
-          <el-table-column label="价格" prop="price" />
-        </el-table>
-        <div>
-          购物车
-          <el-tag size="small" v-for="d in cart" :key="d.id" closable @close="cart = cart.filter((v) => v.id !== d.id)">{{ d.name }}</el-tag>
-        </div>
-        <div>共计 {{ cart.reduce((a, d) => a + d.price, 0) }}</div>
-      </template>
-    </ty-selection-logic>
+    <!-- TODO: 1.disabled
+               2.点击行选中
+               3.性能优化getkey
+               4.全选复选+disabled
+               5.暴露出一些事件（参考elementUI）
+               6.错误处理细化
+               7.分页绑定事件？分页如何封装
+      -->
+    <!-- <ty-selection-logic class="table" v-model="cart" key-by="id" :list="sell"> -->
+    <!-- <template slot-scope="{ isSelected, all, toggle }"> -->
+    <el-table :data="sell" size="mini" @row-click="toggle($event.id)" stripe row-key="id" :ref="table.ref">
+      <Test v-model="selected" />
+      <el-table-column label="商品 ID" prop="id" />
+      <el-table-column label="商品名称" prop="name" />
+      <el-table-column label="价格" prop="price" />
+    </el-table>
+    <div>
+      购物车
+      <el-tag size="small" v-for="d in cart" :key="d.id" closable @close="cart = cart.filter((v) => v.id !== d.id)">{{ d.name }}</el-tag>
+    </div>
+    <div>共计 {{ cart.reduce((a, d) => a + d.price, 0) }}</div>
+    <!-- </template> -->
+    <!-- </ty-selection-logic> -->
     <div class="pagination">
       <el-pagination
+        :ref="table.pagination.ref"
+        v-bind="table.pagination"
         :current-page="currentPage"
         :page-sizes="[5, 10, 20, 50]"
         :page-size="pageSize"
@@ -40,12 +40,17 @@
 </template>
 <script>
 import { TySelectionLogic } from '@tuya-fe/ty-logic'
+import Test from '../el-test/index'
+
+function searchTable(xxxx, xxx) {}
 export default {
   components: {
-    TySelectionLogic
+    TySelectionLogic,
+    Test
   },
   data() {
     return {
+      selected: [],
       pageSize: 5,
       currentPage: 1,
       total: 10,
@@ -57,6 +62,16 @@ export default {
         { id: 4, name: '电视', price: 1200 }
       ]
     }
+  },
+  computed: {
+    table() {
+      return searchTable({
+        fetchFn: this.getData
+      })
+    }
+  },
+  methods: {
+    getData() {}
   }
 }
 </script>

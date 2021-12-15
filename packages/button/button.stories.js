@@ -1,7 +1,7 @@
 import ButtonUnion from './index.vue'
 
 export default {
-  title: '组件/ButtonUnion',
+  title: 'element常用组件合集/ButtonUnion',
   component: ButtonUnion,
   parameters: {
     componentSource: {

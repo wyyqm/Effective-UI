@@ -6,6 +6,7 @@ function resolve(dir) {
 
 module.exports = {
 
+    lintOnSave: false,
   runtimeCompiler: true,
     // 修改webpack的入口为: examples/main.js
     pages: {

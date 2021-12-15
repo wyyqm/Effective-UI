@@ -12,7 +12,9 @@
       :row-key="getRowKeys"
       stripe
     >
-      <el-table-column type="selection" :reserve-selection="true"> </el-table-column>
+      <Test v-model="selected" />
+
+      <!-- <el-table-column type="selection" :reserve-selection="true"> </el-table-column> -->
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
@@ -78,12 +80,14 @@ import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import TySpan from '@tuya-fe/ty-span'
 import EfTableOperate from '../ef-table-operate/index.vue'
+import Test from '../el-test/index.vue'
 export default {
   name: 'searchRow',
   components: {
     EfTableOperate,
     TyImagePreview,
-    TySpan
+    TySpan,
+    Test
   },
   props: {
     height: {
@@ -99,7 +103,8 @@ export default {
       multipleSelection: [],
       selectedData: [],
       currentPage: 1,
-      pageSize: 5
+      pageSize: 5,
+      selected: []
     }
   },
 

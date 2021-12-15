@@ -1,7 +1,7 @@
 import InputUnion from './index.vue'
 
 export default {
-  title: '组件/InputUnion',
+  title: 'element常用组件合集/InputUnion',
   component: InputUnion,
   parameters: {
     componentSource: {

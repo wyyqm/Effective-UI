@@ -1,7 +1,7 @@
 import SelectUnion from './index.vue'
 
 export default {
-  title: '组件/SelectUnion',
+  title: 'element常用组件合集/SelectUnion',
   component: SelectUnion,
   parameters: {
     componentSource: {
