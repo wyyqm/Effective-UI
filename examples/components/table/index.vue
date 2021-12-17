@@ -5,16 +5,13 @@
       :data="tableData"
       tooltip-effect="dark"
       style="width: 100%"
-      v-loading="loading"
       @selection-change="handleSelectionChange"
       @sort-change="sort"
       :max-height="height ? height : 500"
       :row-key="getRowKeys"
       stripe
     >
-      <Test v-model="selected" />
-
-      <!-- <el-table-column type="selection" :reserve-selection="true"> </el-table-column> -->
+      <el-table-column type="selection" :reserve-selection="true"> </el-table-column>
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
@@ -80,39 +77,59 @@ import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import TySpan from '@tuya-fe/ty-span'
 import EfTableOperate from '../ef-table-operate/index.vue'
-import Test from '../el-test/index.vue'
 export default {
   name: 'searchRow',
   components: {
     EfTableOperate,
     TyImagePreview,
-    TySpan,
-    Test
+    TySpan
   },
   props: {
     height: {
       type: Number,
       default: 0
+    },
+    params: {
+      type: Object,
+      default: () => {}
+    },
+    tableData: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      loading: false,
-      total: 0,
-      tableData: [],
-      multipleSelection: [],
-      selectedData: [],
+      searchForm: {
+        date: '',
+        billArea: 'AZ',
+        times: '',
+        id: '',
+        searchVal: '',
+        searchKey: 'userName'
+      },
+      total: 10,
       currentPage: 1,
       pageSize: 5,
+      loading: false,
+      // tableData: [],
+      multipleSelection: [],
+      selectedData: [],
+      // currentPage: 1,
+      // total: 0,
+
+      // pageSize: 5,
       selected: []
     }
   },
 
   mounted() {
     const params = {
-      currentPage: this.currentPage,
-      pageSize: this.pageSize
+      // currentPage: this.currentPage,
+      // pageSize: this.pageSize,
+      ...this.params
     }
+
     this.init(params)
   },
 
@@ -120,20 +137,21 @@ export default {
     init(params) {
       this.loading = true
       // mock.js
-      this.$axios({
-        url: '/parameter/query',
-        method: 'get',
-        params: {
-          pageIndex: params.currentPage,
-          pageSize: params.pageSize
-        }
-      }).then((res) => {
-        this.loading = false
+      // this.$axios({
+      //   url: '/parameter/query',
+      //   method: 'get',
+      //   params: {
+      //     // pageIndex: params.currentPage,
+      //     // pageSize: params.pageSize
+      //     ...this.params
+      //   }
+      // }).then((res) => {
+      //   this.loading = false
 
-        this.tableData = res.data.data.content
-        this.currentPage = res.data.data.pageIndex
-        this.total = res.data.data.total
-      })
+      //   this.tableData = res.data.data.content
+      //   this.currentPage = res.data.data.pageIndex
+      //   this.total = res.data.data.total
+      // })
     },
     // 反选参数
     getRowKeys(row) {
@@ -184,8 +202,10 @@ export default {
       console.log(`每页 ${val} 条`)
       const params = {
         pageSize: val,
-        currentPage: 1
+        ...this.params
       }
+      this.$emit('update:pageSize', val)
+      this.$emit('tableDataChange')
       this.init(params)
       this.toggleSelection()
       // 翻页回到表格顶部
@@ -196,8 +216,11 @@ export default {
     handleCurrentChange(val) {
       const params = {
         currentPage: val,
-        pageSize: this.pageSize
+        ...this.params
       }
+      this.$emit('update:currentPage', val)
+      this.$emit('tableDataChange')
+
       this.init(params)
       this.toggleSelection()
       // 翻页回到表格顶部

@@ -1,53 +1,35 @@
 <template>
   <div>
-    <div class="search">
-      <el-form :inline="true" size="small" :model="searchForm">
-        <el-form-item label="订单编号：">
-          <el-input v-model="searchForm.id" clearable />
+    <ef-search :model="formData" @search="handleSearch">
+      <template v-slot:searchConditon>
+        <el-form-item label="订单编号：" prop="id">
+          <el-input v-model="formData.id" clearable />
         </el-form-item>
-        <el-form-item label="查询时间：">
-          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
-        </el-form-item>
-        <el-form-item label="查询时间：">
-          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
-        </el-form-item>
-        <el-form-item label="开始时间：">
-          <el-date-picker
-            clearable
-            v-model="searchForm.times"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            style="width: 250px"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="订单地区：">
-          <el-select size="small" placeholder="请选择" v-model="searchForm.billArea">
+        <el-form-item label="订单地区：" prop="billAreaValue">
+          <el-select size="small" placeholder="请选择" v-model="formData.billAreaValue">
             <el-option v-for="status in billArea" :key="status.value" :label="status.label" :value="status.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
-          <el-input size="small" v-model="searchForm.searchVal" placeholder="请输入" class="input-select-value" clearable>
-            <el-select v-model="searchForm.searchKey" slot="prepend" style="width: 100px" @change="selectChange">
-              <el-option label="签约方账号" value="userName"></el-option>
-              <el-option label="合同编号" value="servedId"></el-option>
-            </el-select>
-          </el-input>
+        <el-form-item prop="searchVal">
+          <ef-input v-model="formData.searchVal" :options="options"></ef-input>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
-          <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
-          <el-button type="primary" @click="add" icon="el-icon-plus"> 新建 </el-button>
-          <el-button type="primary" @click="educed" :loading="exportLoading" plain icon="el-icon-download"> 导出 </el-button>
-
-          <el-button type="primary" @click="dialogVisible = true" plain> 批量删除 </el-button>
-          <el-button type="text" v-if="hasMore" @click="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
+        <el-form-item label="查询月：" prop="months">
+          <ef-datePicker v-model="formData.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
         </el-form-item>
-      </el-form>
-    </div>
-    <Table :height="scrollHeight"></Table>
+        <el-form-item label="查询日期：" prop="times">
+          <ef-datePicker v-model="formData.times" :timeFormat="true" :dateType="'daterange'"></ef-datePicker>
+        </el-form-item>
+      </template>
+    </ef-search>
+    <Table
+      :height="scrollHeight"
+      :tableData="tableData"
+      :params="searchForm"
+      :total="total"
+      :currentPage.sync="currentPage"
+      :pageSize.sync="pageSize"
+      @tableDataChange="tableDataChange"
+    ></Table>
     <el-dialog :visible.sync="dialogVisible" width="30%">
       <span> <i class="el-icon-warning" style="color: orange; margin-right: 5px"></i>确认批量删除所选内容吗？ </span>
       <span slot="footer" class="dialog-footer">
@@ -61,28 +43,37 @@
 <script>
 // import Pagination from '../../components/pagination/index.vue'
 import Table from '../../components/table/index.vue'
+import EfSearch from '../../components/ef-search/index.vue'
+import EfDatePicker from '../../components/ef-datePicker/index'
+import EfInput from '../../components/ef-selectInput/index'
 export default {
   name: 'searchRow',
   components: {
     // Pagination,
+    EfSearch,
+    EfDatePicker,
+    EfInput,
     Table
   },
   data() {
     return {
       expend: false,
       hasMore: false,
-      searchForm: {
-        date: '',
-        billArea: 'AZ',
-        times: '',
+      formData: {
+        times: [],
+        months: [],
         id: '',
-        searchVal: '',
-        searchKey: 'userName'
+        searchVal: {
+          input: '',
+          key: ''
+        },
+        billAreaValue: ''
       },
-      total: 0,
-      exportLoading: false,
-      delLoading: false,
-      dialogVisible: false,
+      options: [
+        { label: '今天签约吧账号梦', value: 'today' },
+        { label: 'ming天', value: 'tomorrow' }
+      ],
+
       billArea: [
         {
           label: '美国区',
@@ -105,6 +96,13 @@ export default {
           value: 'WE'
         }
       ],
+      total: 10,
+      currentPage: 1,
+      pageSize: 5,
+      exportLoading: false,
+      delLoading: false,
+      dialogVisible: false,
+      tableData: [],
       loading: false,
       clientHeight: document.body.clientHeight,
       scrollHeight: document.body.clientHeight
@@ -112,6 +110,7 @@ export default {
   },
 
   mounted() {
+    this.init()
     this.toggleExpend()
     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
     // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
@@ -136,15 +135,34 @@ export default {
     }
   },
   methods: {
+    init() {
+      this.$axios({
+        url: '/parameter/query',
+        method: 'get',
+        params: {
+          pageIndex: this.currentPage,
+          pageSize: this.pageSize,
+          ...this.params
+        }
+      }).then((res) => {
+        // this.loading = false
+        this.tableData = res.data.data.content
+        this.currentPage = res.data.data.pageIndex
+        this.total = res.data.data.total
+      })
+    },
+    tableDataChange() {
+      this.init()
+    },
     // 展开收起
     toggleExpend() {
       this.expend = !this.expend
       const searchItem = document.querySelectorAll('.el-form-item--small')
-      if (searchItem.length > 4) {
+      if (searchItem.length > 3) {
         // 搜索条件小于等于三个不展示展开收起
         this.hasMore = true
         searchItem.forEach((ele, i) => {
-          if (i > 2 && i < searchItem.length - 1) {
+          if (i > 2 && i < searchItem.length) {
             if (this.expend) {
               ele.setAttribute('style', 'display: none')
             } else {
@@ -156,6 +174,7 @@ export default {
     },
     // 搜索
     handleSearch() {
+      this.init()
       console.log(this.searchForm)
     },
     // 重置

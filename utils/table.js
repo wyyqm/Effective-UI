@@ -32,3 +32,20 @@ export default {
     }
   }
 }
+
+// export default Mock.mock('/parameter/query', 'post', function (option) {
+//   const info = JSON.parse(option.body)
+//   const [index, size] = [Number(info.currentPage), Number(info.pageSize)]
+
+//   const newDataList = index > 1 ? result.slice((index - 1) * size, index * size) : result.slice(0, index * size)
+//   return {
+//     status: 200,
+//     message: 'success',
+//     data: {
+//       pageIndex: index,
+//       pageSize: size,
+//       content: newDataList,
+//       total: result.length
+//     }
+//   }
+// })

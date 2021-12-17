@@ -8,25 +8,14 @@
                6.错误处理细化
                7.分页绑定事件？分页如何封装
       -->
-    <!-- <ty-selection-logic class="table" v-model="cart" key-by="id" :list="sell"> -->
-    <!-- <template slot-scope="{ isSelected, all, toggle }"> -->
-    <el-table :data="sell" size="mini" @row-click="toggle($event.id)" stripe row-key="id" :ref="table.ref">
-      <Test v-model="selected" />
+    <el-table :data="sell" size="mini" stripe row-key="id" @row-click="onRowClick">
+      <el-table-checkbox v-model="selected" disabledKey="disabled" @selectChange="selectChange" @allSelectChange="allSelectChange" />
       <el-table-column label="商品 ID" prop="id" />
       <el-table-column label="商品名称" prop="name" />
       <el-table-column label="价格" prop="price" />
     </el-table>
-    <div>
-      购物车
-      <el-tag size="small" v-for="d in cart" :key="d.id" closable @close="cart = cart.filter((v) => v.id !== d.id)">{{ d.name }}</el-tag>
-    </div>
-    <div>共计 {{ cart.reduce((a, d) => a + d.price, 0) }}</div>
-    <!-- </template> -->
-    <!-- </ty-selection-logic> -->
     <div class="pagination">
       <el-pagination
-        :ref="table.pagination.ref"
-        v-bind="table.pagination"
         :current-page="currentPage"
         :page-sizes="[5, 10, 20, 50]"
         :page-size="pageSize"
@@ -39,14 +28,12 @@
   </div>
 </template>
 <script>
-import { TySelectionLogic } from '@tuya-fe/ty-logic'
-import Test from '../el-test/index'
+import ElTableCheckbox from '../el-table-checkbox/index'
 
 function searchTable(xxxx, xxx) {}
 export default {
   components: {
-    TySelectionLogic,
-    Test
+    ElTableCheckbox
   },
   data() {
     return {
@@ -70,8 +57,34 @@ export default {
       })
     }
   },
+  created() {
+    for (let i = 5; i < 1000; i++) {
+      this.sell.push({ id: i, name: '空调', price: Math.ceil(Math.random() * 2000) })
+    }
+  },
   methods: {
-    getData() {}
+    getData() {},
+    disabled() {},
+    selectChange(row) {
+      // console.log(this.selected)
+    },
+    allSelectChange() {
+      // console.log(this.selected)
+    },
+    onRowClick(row) {
+      const isSelected = !!this.selected.find((item) => item.id === row.id)
+      if (isSelected) {
+        this.selected = this.selected.filter((item) => item.id !== row.id)
+      } else if (!row.disabled) {
+        this.selected.push(row)
+      }
+    },
+    disabledData() {
+      const arr = this.sell.filter((item) => {
+        return item.price > 1800
+      })
+      return arr
+    }
   }
 }
 </script>

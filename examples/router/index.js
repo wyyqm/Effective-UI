@@ -5,6 +5,7 @@ import Search from '../components/ef-search/index'
 import Item from '../components/ef-formItem/index'
 import searchRow from '../pages/searchRow/index'
 import Table from '../components/ef-table/index'
+import SearchPage from '../pages/searchPage/index'
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,8 +16,8 @@ const routes = [
   },
   {
     path: '/ss',
-    name: 'ss',
-    component: Search
+    name: 'searchPage',
+    component: SearchPage
   },
   {
     path: '/table',

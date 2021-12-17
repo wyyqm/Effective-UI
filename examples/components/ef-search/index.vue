@@ -1,14 +1,14 @@
 <template>
   <div class="search">
-    <el-form :inline="true" size="small" :model="model" ref="searchForm">
+    <el-form :inline="true" size="small" :model="model" ref="searchForm" class="searchForm">
       <slot name="searchConditon"></slot>
-      <el-form-item>
-        <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
-        <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
-        <slot name="handleBtn"></slot>
-        <el-button type="text" v-if="hasMore" @click="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
-      </el-form-item>
     </el-form>
+    <div class="searchBtn">
+      <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
+      <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
+      <slot name="handleBtn"></slot>
+      <el-button type="text" v-if="hasMore" @click="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
+    </div>
   </div>
 </template>
 <script>
@@ -141,6 +141,12 @@ export default {
 .search {
   display: flex;
   flex-wrap: wrap;
+  .searchBtn {
+    width: 200px;
+  }
+  .searchForm {
+    width: calc(100% - 200px);
+  }
   .el-form {
     text-align: left;
   }

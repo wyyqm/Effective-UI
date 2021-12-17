@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@tuya-fe/full-ui": "^3.1.1",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@tuya-fe/ty-image-preview": "^1.0.3",
     "@tuya-fe/ty-logic": "^1.0.11",
     "@tuya-fe/ty-span": "^1.0.9",
+    "@types/lodash": "^4.14.178",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
