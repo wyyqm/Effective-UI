@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ef-search :model="formData" @search="handleSearch">
+    <ef-search :model="formData" @search="handleSearch" @expend="expend">
       <template v-slot:searchConditon>
         <el-form-item label="订单编号：" prop="id">
           <el-input v-model="formData.id" clearable />
@@ -24,19 +24,11 @@
     <Table
       :height="scrollHeight"
       :tableData="tableData"
-      :params="searchForm"
       :total="total"
       :currentPage.sync="currentPage"
       :pageSize.sync="pageSize"
       @tableDataChange="tableDataChange"
     ></Table>
-    <el-dialog :visible.sync="dialogVisible" width="30%">
-      <span> <i class="el-icon-warning" style="color: orange; margin-right: 5px"></i>确认批量删除所选内容吗？ </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirm()">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -57,7 +49,6 @@ export default {
   },
   data() {
     return {
-      expend: false,
       hasMore: false,
       formData: {
         times: [],
@@ -111,7 +102,6 @@ export default {
 
   mounted() {
     this.init()
-    this.toggleExpend()
     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
     // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
     this.scrollHeight = this.clientHeight - searchHeight - 125
@@ -126,15 +116,15 @@ export default {
       })()
     }
   },
-  watch: {
+
+  methods: {
     expend() {
       // 展开收起的时候 表格高度要自适应可视区域
       const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
       // 表格滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
-      this.scrollHeight = this.clientHeight - searchHeight - 125
-    }
-  },
-  methods: {
+      console.log(searchHeight)
+      this.scrollHeight = this.clientHeight - searchHeight - 145
+    },
     init() {
       this.$axios({
         url: '/parameter/query',
@@ -154,28 +144,11 @@ export default {
     tableDataChange() {
       this.init()
     },
-    // 展开收起
-    toggleExpend() {
-      this.expend = !this.expend
-      const searchItem = document.querySelectorAll('.el-form-item--small')
-      if (searchItem.length > 3) {
-        // 搜索条件小于等于三个不展示展开收起
-        this.hasMore = true
-        searchItem.forEach((ele, i) => {
-          if (i > 2 && i < searchItem.length) {
-            if (this.expend) {
-              ele.setAttribute('style', 'display: none')
-            } else {
-              ele.setAttribute('style', 'display: inline-block')
-            }
-          }
-        })
-      }
-    },
+
     // 搜索
     handleSearch() {
       this.init()
-      console.log(this.searchForm)
+      // console.log(this.searchForm)
     },
     // 重置
     reset() {},

@@ -1,9 +1,11 @@
 <template>
+  <!-- TODO：重置 搜索 按照 htmlType  form表单事件native事件 -->
   <div class="search">
     <el-form :inline="true" size="small" :model="model" ref="searchForm" class="searchForm">
       <slot name="searchConditon"></slot>
     </el-form>
     <div class="searchBtn">
+      <slot></slot>
       <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
       <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
       <slot name="handleBtn"></slot>
@@ -112,11 +114,11 @@ export default {
     toggleExpend() {
       this.expend = !this.expend
       const searchItem = document.querySelectorAll('.el-form-item--small')
-      if (searchItem.length > 4) {
+      if (searchItem.length > 3) {
         // 搜索条件小于等于三个不展示展开收起
         this.hasMore = true
         searchItem.forEach((ele, i) => {
-          if (i > 2 && i < searchItem.length - 1) {
+          if (i > 2 && i < searchItem.length) {
             if (this.expend) {
               ele.setAttribute('style', 'display: none')
             } else {
@@ -125,10 +127,12 @@ export default {
           }
         })
       }
+      this.$emit('expend', this.expend)
     },
     reset() {
       // console.log(this.$refs.searchForm)
       this.$refs.searchForm.resetFields()
+      this.$emit('search', this.model)
       // for (const item in this.searchForm) {
       //   console.log(this.searchForm[item])
       //   // if()

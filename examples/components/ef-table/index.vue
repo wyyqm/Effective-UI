@@ -9,7 +9,7 @@
                7.分页绑定事件？分页如何封装
       -->
     <el-table :data="sell" size="mini" stripe row-key="id" @row-click="onRowClick">
-      <el-table-checkbox v-model="selected" disabledKey="disabled" @selectChange="selectChange" @allSelectChange="allSelectChange" />
+      <ef-table-checkbox v-model="selected" disabledKey="disabled" @selectChange="selectChange" @allSelectChange="allSelectChange" />
       <el-table-column label="商品 ID" prop="id" />
       <el-table-column label="商品名称" prop="name" />
       <el-table-column label="价格" prop="price" />
@@ -28,12 +28,12 @@
   </div>
 </template>
 <script>
-import ElTableCheckbox from '../el-table-checkbox/index'
+import EfTableCheckbox from '../ef-table-checkbox/index'
 
 function searchTable(xxxx, xxx) {}
 export default {
   components: {
-    ElTableCheckbox
+    EfTableCheckbox
   },
   data() {
     return {

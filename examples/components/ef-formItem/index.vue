@@ -19,9 +19,6 @@
         <ef-datePicker v-model="formData.times" :timeFormat="true" :dateType="'daterange'"></ef-datePicker>
       </el-form-item>
     </template>
-    <template slot="handleBtn">
-      <el-button type="primary" @click="dialogVisible = true" plain> 批量删除 </el-button>
-    </template>
   </ef-search>
 </template>
 <script>

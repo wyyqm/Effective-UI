@@ -8,9 +8,8 @@
     pagination单独封装起来 用mixins
 
     -->
-    <asdasd :searchTable="searchTable"> </asdasd>
-    <div class="search">
-      <el-form :inline="true" size="small" :model="searchForm" ref="searchForm">
+    <!-- <asdasd :searchTable="searchTable"> </asdasd> -->
+    <!-- <el-form :inline="true" size="small" :model="searchForm" ref="searchForm">
         <el-form-item label="订单编号：" prop="id">
           <el-input v-model="searchForm.id" clearable />
         </el-form-item>
@@ -21,21 +20,29 @@
           <el-button type="primary" @click="searchTable.handleSearch(searchForm)" icon="el-icon-search"> 搜索 </el-button>
           <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
         </el-form-item>
-      </el-form>
-    </div>
+      </el-form> -->
+    <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
+      <template v-slot:searchConditon>
+        <el-form-item label="订单编号：" prop="id">
+          <el-input v-model="searchForm.id" clearable />
+        </el-form-item>
+        <el-form-item label="查询月：" prop="months">
+          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
+        </el-form-item>
+        <el-form-item label="查询月：" prop="months">
+          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
+        </el-form-item>
+        <el-form-item label="查询月：" prop="months">
+          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
+        </el-form-item>
+        <el-form-item label="查询日期：" prop="times">
+          <ef-datePicker v-model="searchForm.times" :timeFormat="true" :dateType="'daterange'"></ef-datePicker>
+        </el-form-item>
+      </template>
+    </ef-search>
     <div class="table">
-      <el-table
-        ref="multipleTable"
-        :data="searchTable.dataList"
-        tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        @sort-change="sort"
-        :max-height="scrollHeight"
-        :row-key="getRowKeys"
-        stripe
-      >
-        <el-table-checkbox v-model="selected" />
+      <el-table ref="tableList" :data="searchTable.dataList" tooltip-effect="dark" @sort-change="sort" :max-height="searchTable.scrollHeight" stripe>
+        <ef-table-checkbox v-model="selected" />
 
         <!-- <el-table-column type="selection" :reserve-selection="true"> </el-table-column> -->
         <el-table-column label="单行文本" prop="orderName"> </el-table-column>
@@ -48,7 +55,10 @@
           </template>
         </el-table-column>
         <!--远程排序 @sort-change-->
-        <el-table-column label="时间列" prop="date" sortable="custom" :formatter="(row) => formatTime(row.date, 'YYYY-MM-DD HH:mm:ss')">
+        <el-table-column label="时间列" prop="date" sortable="custom">
+          <template slot-scope="scope">
+            <ty-time-span block :value="scope.row.date" />
+          </template>
         </el-table-column>
         <el-table-column label="状态列">
           <template slot-scope="scope">
@@ -78,30 +88,20 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination">
-        <el-pagination
-          @size-change="searchTable.handleSizeChange"
-          @current-change="searchTable.handleCurrentChange"
-          :current-page="searchTable.currentPage"
-          :page-sizes="[5, 10, 20, 50]"
-          :page-size="searchTable.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="searchTable.total"
-          background
-        >
-        </el-pagination>
-      </div>
+      <ef-pagination></ef-pagination>
     </div>
   </div>
 </template>
 <script>
-import moment from 'moment'
+import EfSearch from '../../components/ef-search/index.vue'
+import EfDatePicker from '../../components/ef-datePicker/index'
+import EfInput from '../../components/ef-selectInput/index'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
-import TySpan from '@tuya-fe/ty-span'
-import ElTableCheckbox from '../../components/el-table-checkbox/index.vue'
-import Vue from 'vue'
-import cloneDeep from 'lodash/cloneDeep'
+import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
+import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
+import EfPagination from '../../components/ef-pagination/index.vue'
 import Mock from 'mockjs'
+import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
 
 const data = {
   'list|1000': [
@@ -126,7 +126,7 @@ async function getData({ currentPage, pageSize, id }) {
   }
   const newDataList = index > 1 ? filtered.slice((index - 1) * size, index * size) : filtered.slice(0, index * size)
 
-  await new Promise((resolve) => setTimeout(resolve, 2000))
+  await new Promise((resolve) => setTimeout(resolve, 500))
   return {
     status: 200,
     message: 'success',
@@ -139,86 +139,26 @@ async function getData({ currentPage, pageSize, id }) {
   }
 }
 
-function makeSearchTableData(options) {
-  const { fetchFn } = options
-  const ret = Vue.observable({
-    loading: false,
-    dataList: [],
-    currentPage: 1,
-    total: 0,
-    formValues: {},
-    pageSize: 5,
-    // 用来汇报ref可不可以获得了
-    connect() {},
-    setState: (state) => {
-      Object.assign(ret, state)
-    },
-    handleSizeChange: (val) => {
-      console.log(`每页 ${val} 条`)
-      const params = {
-        pageSize: val,
-        currentPage: ret.currentPage,
-        ...ret.formValues
-      }
-
-      fetchFn(params, ret.setState)
-      // this.toggleSelection()
-      // 翻页回到表格顶部
-      Vue.nextTick(() => {
-        // this.$refs.multipleTable.bodyWrapper.scrollTop = 0
-      })
-    },
-    handleCurrentChange: (val) => {
-      const params = {
-        currentPage: val,
-        pageSize: ret.pageSize,
-
-        ...ret.formValues
-      }
-
-      fetchFn(params, ret.setState)
-      // this.toggleSelection()
-      // 翻页回到表格顶部
-      Vue.nextTick(() => {
-        // this.$refs.multipleTable.bodyWrapper.scrollTop = 0
-      })
-    },
-    handleSearch: (formValues) => {
-      ret.formValues = cloneDeep(formValues)
-      ret.currentPage = 1
-      const params = {
-        currentPage: ret.currentPage,
-        pageSize: ret.pageSize,
-        ...ret.formValues
-      }
-
-      fetchFn(params, ret.setState)
-    },
-    init: () => {
-      const params = {
-        currentPage: ret.currentPage,
-        pageSize: ret.pageSize,
-        ...ret.formValues
-      }
-
-      fetchFn(params, ret.setState)
-    }
-  })
-
-  return ret
-}
-
 export default {
+  mixins: [searchValueMixin],
   name: 'searchPage',
   components: {
+    EfSearch,
+    EfDatePicker,
     TyImagePreview,
     TySpan,
-    ElTableCheckbox
+    TyTimeSpan,
+    EfTableCheckbox,
+    EfPagination
   },
-
+  provide() {
+    return {
+      searchTable: this.searchTable
+    }
+  },
   data() {
     return {
-      searchTable: makeSearchTableData({
+      searchTable: this.makeSearchTableData({
         fetchFn: this.init
       }),
       multipleSelection: [],
@@ -226,14 +166,14 @@ export default {
       searchForm: {
         date: '',
         billArea: 'AZ',
-        times: '',
+        times: [],
+        months: [],
         id: '',
         searchVal: '',
-        searchKey: 'userName'
+        searchKey: 'userName',
+        billAreaValue: ''
       },
-      selected: [],
-      clientHeight: document.body.clientHeight,
-      scrollHeight: document.body.clientHeight
+      selected: []
     }
   },
   mounted() {
@@ -241,53 +181,20 @@ export default {
   },
 
   methods: {
-    init(params, setState) {
+    init(params) {
       // console.log(params)
       getData(params).then((res) => {
         this.searchTable.dataList = res.data.content
+        this.searchTable.currentPage = res.data.pageIndex
         this.searchTable.total = res.data.total
       })
     },
-    // 重置
-    reset() {
-      this.$refs.searchForm.resetFields()
-    },
-    // 反选参数
-    getRowKeys(row) {
-      return row.orderId
-    },
 
-    // 分页选中
-    toggleSelection() {
-      this.tableData.forEach((item) => {
-        this.selectedData.forEach((ele) => {
-          if (item.orderId === ele.orderId) {
-            this.$refs.multipleTable.toggleRowSelection(item)
-          }
-        })
-      })
-    },
-    // 当前页选中
-    handleSelectionChange(val) {
-      this.multipleSelection = val
-      this.selectedData = []
-      if (val) {
-        val.forEach((row) => {
-          if (row) {
-            this.selectedData.push(val[0])
-          }
-        })
-      }
-    },
     delCur(val) {
       console.log(val)
       // to do sth
     },
-    formatTime(time) {
-      if (time) {
-        return moment(Number(time)).format('YYYY-MM-DD HH:mm:ss')
-      }
-    },
+
     sort(val) {
       console.log(val)
     },

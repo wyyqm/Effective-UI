@@ -1,4 +1,7 @@
 <template>
+  <!--
+  TODO：支持两个字段
+ -->
   <el-input size="small" :value="value.input" placeholder="请输入" class="input-select-value" @input="handleInput" clearable>
     <el-select :value="value.key" slot="prepend" style="width: 100px" @change="selectChange">
       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>

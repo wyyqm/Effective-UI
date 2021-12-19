@@ -1,7 +1,7 @@
 import Mock from 'mockjs'
 import getQueryVariable from './queryUrlParams'
 const data = {
-  'list|15': [
+  'list|150': [
     {
       date: '@natural(1523622008016,1542622789016)',
       orderName: '@cword(3,6)',
