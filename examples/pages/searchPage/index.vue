@@ -40,69 +40,65 @@
         </el-form-item>
       </template>
     </ef-search>
-    <div class="table">
-      <el-table ref="tableList" :data="searchTable.dataList" tooltip-effect="dark" @sort-change="sort" :max-height="searchTable.scrollHeight" stripe>
-        <ef-table-checkbox v-model="selected" />
+    <!-- :ref="searchTable.context" -->
 
-        <!-- <el-table-column type="selection" :reserve-selection="true"> </el-table-column> -->
-        <el-table-column label="单行文本" prop="orderName"> </el-table-column>
-        <el-table-column label="图片列" prop="orderId">
-          <template slot-scope="scope">
-            <div v-if="scope.row.src">
-              <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 100px" />
-            </div>
-            <div v-else>--</div>
-          </template>
-        </el-table-column>
-        <!--远程排序 @sort-change-->
-        <el-table-column label="时间列" prop="date" sortable="custom">
-          <template slot-scope="scope">
-            <ty-time-span block :value="scope.row.date" />
-          </template>
-        </el-table-column>
-        <el-table-column label="状态列">
-          <template slot-scope="scope">
-            <span v-if="scope.row.status === 0">
-              <ty-span color="#f56c6c">未支付</ty-span>
-            </span>
-            <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
-        <el-table-column prop="switch" label="开关">
-          <template slot-scope="scope">
-            <el-switch v-model="scope.row.switch"> </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column prop="handle" label="操作">
-          <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
-            <el-divider direction="vertical"></el-divider>
-            <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
-              <el-button slot="reference" type="text">删除</el-button>
-            </el-popconfirm>
-            <el-divider direction="vertical"></el-divider>
-            <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
-              <el-button slot="reference" type="text">审核</el-button>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <ef-pagination></ef-pagination>
-    </div>
+    <ef-table-container @sortChange="sort">
+      <ef-table-checkbox v-model="selected" />
+      <el-table-column label="单行文本" prop="orderName"> </el-table-column>
+      <el-table-column label="图片列" prop="orderId">
+        <template slot-scope="scope">
+          <div v-if="scope.row.src">
+            <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 100px" />
+          </div>
+          <div v-else>--</div>
+        </template>
+      </el-table-column>
+      <!--远程排序 @sort-change-->
+      <el-table-column label="时间列" prop="date" sortable="custom">
+        <template slot-scope="scope">
+          <ty-time-span block :value="scope.row.date" />
+        </template>
+      </el-table-column>
+      <el-table-column label="状态列">
+        <template slot-scope="scope">
+          <span v-if="scope.row.status === 0">
+            <ty-span color="#f56c6c">未支付</ty-span>
+          </span>
+          <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
+      <el-table-column prop="switch" label="开关">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.switch"> </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column prop="handle" label="操作">
+        <template slot-scope="scope">
+          <el-button type="text">编辑</el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
+            <el-button slot="reference" type="text">删除</el-button>
+          </el-popconfirm>
+          <el-divider direction="vertical"></el-divider>
+          <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
+            <el-button slot="reference" type="text">审核</el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </ef-table-container>
   </div>
 </template>
 <script>
 import EfSearch from '../../components/ef-search/index.vue'
 import EfDatePicker from '../../components/ef-datePicker/index'
-import EfInput from '../../components/ef-selectInput/index'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfPagination from '../../components/ef-pagination/index.vue'
 import Mock from 'mockjs'
 import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
-
+import EfTableContainer from '../el-table-container/index.vue'
 const data = {
   'list|1000': [
     {
@@ -145,11 +141,12 @@ export default {
   components: {
     EfSearch,
     EfDatePicker,
+    EfTableContainer,
     TyImagePreview,
     TySpan,
     TyTimeSpan,
-    EfTableCheckbox,
-    EfPagination
+    EfTableCheckbox
+    // EfPagination
   },
   provide() {
     return {
@@ -161,8 +158,6 @@ export default {
       searchTable: this.makeSearchTableData({
         fetchFn: this.init
       }),
-      multipleSelection: [],
-      selectedData: [],
       searchForm: {
         date: '',
         billArea: 'AZ',
@@ -182,7 +177,12 @@ export default {
 
   methods: {
     init(params) {
-      // console.log(params)
+      console.log(params)
+      // 如果需要对查询参数处理，就对params处理即可
+      const para = {
+        startTime: params.month[0],
+        endTime: params.month[1]
+      }
       getData(params).then((res) => {
         this.searchTable.dataList = res.data.content
         this.searchTable.currentPage = res.data.pageIndex

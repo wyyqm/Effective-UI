@@ -15,7 +15,6 @@ export default {
     // 大、小屏幕切换，页面自适应
     window.onresize = () => {
       return (() => {
-        console.log(123123)
         const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
         // window.clientHeight = document.body.clientHeight
         // that.clientHeight = window.clientHeight
@@ -36,8 +35,11 @@ export default {
         formValues: {},
         pageSize: 10,
         scrollHeight: document.body.clientHeight,
+        tableRef: null,
         // 用来汇报ref可不可以获得了
-        connect() {},
+        connect: (ref) => {
+          ret.tableRef = ref
+        },
         setState: (state) => {
           // Object.assign(ret, state)
           ret.total = state.total
@@ -49,7 +51,6 @@ export default {
           // 展开收起的时候 表格高度要自适应可视区域
           const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
           ret.scrollHeight = document.body.clientHeight - searchHeight - 125
-          // console.log('searchHeight', ret.searchHeight)
         },
         handleSizeChange: (val) => {
           const params = {
@@ -59,10 +60,10 @@ export default {
           }
 
           fetchFn(params, ret.setState)
-          // this.toggleSelection()
           // 翻页回到表格顶部
+
           Vue.nextTick(() => {
-            // this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+            ret.tableRef.bodyWrapper.scrollTop = 0
           })
         },
         handleCurrentChange: (val) => {
@@ -74,10 +75,9 @@ export default {
           }
 
           fetchFn(params, ret.setState)
-          // this.toggleSelection()
           // 翻页回到表格顶部
           Vue.nextTick(() => {
-            // this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+            ret.tableRef.bodyWrapper.scrollTop = 0
           })
         },
         handleSearch: (formValues) => {

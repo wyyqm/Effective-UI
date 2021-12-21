@@ -96,6 +96,10 @@ export default {
     tableData: {
       type: Array,
       default: () => []
+    },
+    total: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -108,7 +112,6 @@ export default {
         searchVal: '',
         searchKey: 'userName'
       },
-      total: 10,
       currentPage: 1,
       pageSize: 5,
       loading: false,
@@ -209,6 +212,7 @@ export default {
       this.toggleSelection()
       // 翻页回到表格顶部
       this.$nextTick(() => {
+        console.log(this.$refs.multipleTable)
         this.$refs.multipleTable.bodyWrapper.scrollTop = 0
       })
     },

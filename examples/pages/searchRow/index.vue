@@ -24,7 +24,7 @@
     <Table
       :height="scrollHeight"
       :tableData="tableData"
-      :total="total"
+      :total="totals"
       :currentPage.sync="currentPage"
       :pageSize.sync="pageSize"
       @tableDataChange="tableDataChange"
@@ -87,7 +87,7 @@ export default {
           value: 'WE'
         }
       ],
-      total: 10,
+      totals: 10,
       currentPage: 1,
       pageSize: 5,
       exportLoading: false,
@@ -138,7 +138,7 @@ export default {
         // this.loading = false
         this.tableData = res.data.data.content
         this.currentPage = res.data.data.pageIndex
-        this.total = res.data.data.total
+        this.totals = res.data.data.total
       })
     },
     tableDataChange() {
