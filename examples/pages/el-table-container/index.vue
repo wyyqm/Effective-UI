@@ -1,6 +1,14 @@
 <template>
   <div class="table">
-    <el-table ref="tableList" :data="searchTable.dataList" tooltip-effect="dark" @sort-change="sort" :max-height="searchTable.scrollHeight" stripe>
+    <el-table
+      ref="tableList"
+      :row-key="rowKey"
+      :data="searchTable.dataList"
+      tooltip-effect="dark"
+      @sort-change="sort"
+      :max-height="searchTable.scrollHeight"
+      stripe
+    >
       <slot></slot>
     </el-table>
     <ef-pagination></ef-pagination>
@@ -13,7 +21,6 @@ import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfPagination from '../../components/ef-pagination/index.vue'
-import Mock from 'mockjs'
 import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
 export default {
   mixins: [searchValueMixin],
@@ -24,6 +31,12 @@ export default {
     // TyImagePreview,
     // EfTableCheckbox,
     EfPagination
+  },
+  props: {
+    rowKey: {
+      type: String,
+      value: 'id'
+    }
   },
   data() {
     return {
@@ -36,23 +49,20 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.bodyWrapper)
     this.searchTable.connect(this.bodyWrapper)
+    window.onresize = () => {
+      return (() => {
+        const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+        const scrollHeight = document.body.clientHeight - searchHeight - 125
+        this.searchTable.windowResize(scrollHeight)
+      })()
+    }
   },
   methods: {
-    delCur(val) {
-      console.log(val)
-      // to do sth
-    },
-
     sort(val) {
       // console.log(val)
       this.$emit('sortChange', val)
-    },
-    onOpen() {
-      console.log('open')
-    },
-    onClose() {
-      console.log('close')
     }
   }
 }

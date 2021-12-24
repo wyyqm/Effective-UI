@@ -8,42 +8,24 @@
     pagination单独封装起来 用mixins
 
     -->
-    <!-- <asdasd :searchTable="searchTable"> </asdasd> -->
-    <!-- <el-form :inline="true" size="small" :model="searchForm" ref="searchForm">
-        <el-form-item label="订单编号：" prop="id">
-          <el-input v-model="searchForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="查询时间：" prop="date">
-          <el-date-picker clearable v-model="searchForm.date" type="month" placeholder="选择月"> </el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchTable.handleSearch(searchForm)" icon="el-icon-search"> 搜索 </el-button>
-          <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
-        </el-form-item>
-      </el-form> -->
     <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
       <template v-slot:searchConditon>
-        <el-form-item label="订单编号：" prop="id">
-          <el-input v-model="searchForm.id" clearable />
+        <el-form-item label="订单名称：" prop="name">
+          <el-input v-model="searchForm.name" clearable />
         </el-form-item>
         <el-form-item label="查询月：" prop="months">
           <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
         </el-form-item>
-        <el-form-item label="查询月：" prop="months">
-          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
-        </el-form-item>
-        <el-form-item label="查询月：" prop="months">
-          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
+        <el-form-item prop="searchVal">
+          <ef-input v-model="searchForm.searchVal" :options="options"></ef-input>
         </el-form-item>
         <el-form-item label="查询日期：" prop="times">
           <ef-datePicker v-model="searchForm.times" :timeFormat="true" :dateType="'daterange'"></ef-datePicker>
         </el-form-item>
       </template>
     </ef-search>
-    <!-- :ref="searchTable.context" -->
-
-    <ef-table-container @sortChange="sort">
-      <ef-table-checkbox v-model="selected" />
+    <ef-table-container @sortChange="sort" rowKey="id">
+      <ef-table-checkbox v-model="selected" @input="selectObj" :disabledData="disabledData" />
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
@@ -95,13 +77,14 @@ import EfDatePicker from '../../components/ef-datePicker/index'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
-import EfPagination from '../../components/ef-pagination/index.vue'
 import Mock from 'mockjs'
 import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
 import EfTableContainer from '../el-table-container/index.vue'
+import EfInput from '../../components/ef-selectInput/index'
 const data = {
   'list|1000': [
     {
+      id: '@natural(10,99999999)',
       date: '@natural(1523622008016,1542622789016)',
       orderName: '@cword(3,6)',
       src: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
@@ -113,12 +96,12 @@ const data = {
   ]
 }
 const result = Mock.mock(data).list
-async function getData({ currentPage, pageSize, id }) {
+async function getData({ currentPage, pageSize, name }) {
   const index = currentPage
   const size = pageSize
   let filtered = result
-  if (id) {
-    filtered = result.filter((item) => item.orderName.includes(id))
+  if (name) {
+    filtered = result.filter((item) => item.orderName.includes(name))
   }
   const newDataList = index > 1 ? filtered.slice((index - 1) * size, index * size) : filtered.slice(0, index * size)
 
@@ -145,8 +128,8 @@ export default {
     TyImagePreview,
     TySpan,
     TyTimeSpan,
+    EfInput,
     EfTableCheckbox
-    // EfPagination
   },
   provide() {
     return {
@@ -163,38 +146,45 @@ export default {
         billArea: 'AZ',
         times: [],
         months: [],
-        id: '',
-        searchVal: '',
-        searchKey: 'userName',
+        name: '',
+        searchVal: {},
         billAreaValue: ''
       },
+      options: [
+        { label: '合同名称', value: 'contractName' },
+        { label: '账单名称', value: 'accountName' }
+      ],
       selected: []
     }
   },
-  mounted() {
+  created() {
     this.searchTable.init()
   },
 
   methods: {
     init(params) {
-      console.log(params)
       // 如果需要对查询参数处理，就对params处理即可
-      const para = {
-        startTime: params.month[0],
-        endTime: params.month[1]
-      }
       getData(params).then((res) => {
         this.searchTable.dataList = res.data.content
         this.searchTable.currentPage = res.data.pageIndex
         this.searchTable.total = res.data.total
       })
+      console.log(this.searchTable.dataList)
     },
-
+    selectObj() {
+      console.log(this.selected)
+    },
     delCur(val) {
       console.log(val)
       // to do sth
     },
-
+    disabledData() {
+      console.log(this.searchTable.dataList)
+      const arr = this.searchTable.dataList.filter((item) => {
+        return item.id > 44000000
+      })
+      return arr
+    },
     sort(val) {
       console.log(val)
     },

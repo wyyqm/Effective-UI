@@ -12,10 +12,11 @@
         "baseUrl": ".",
         "types": ["webpack-env"],
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "@component/*": [".examples/component"]
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx", "mock/**/*.ts", "src/index.js"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx", "mock/**/*.ts", "src/index.js", "examples/**/*"],
     "exclude": ["node_modules"]
 }

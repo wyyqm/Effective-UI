@@ -41,6 +41,7 @@ export default {
         })
       })
     }
+    console.log(disabledData)
   },
   computed: {
     owner() {
@@ -58,30 +59,32 @@ export default {
       return map
     },
     allSelected() {
+      let val
       for (const row of this.owner.data) {
         if (!this.selected[this.getKey(row)]) {
-          return false
+          val = false
+        } else {
+          val = true
         }
       }
-      return true
+      return val
     },
     indeterminate() {
-      let value = null
-      // console.log(this.owner.data.length)
-      // console.log(Object.keys(this.selected))
-      // // for (const row of Object.keys(this.selected)) {
-      // for (const item of this.owner.data) {
-      // if (row === this.getKey(item)) {
-      // console.log(this.getKey(item))
-      // }
-      // }
-      // // }
-      if (Object.keys(this.selected).length >= this.owner.data.length || Object.keys(this.selected).length === 0) {
-        value = false
+      let val
+      const selectList = this.owner.data.filter((v) => {
+        return Object.keys(this.selected).indexOf(this.getKey(v).toString()) !== -1
+      })
+      if (selectList.length === 0 || selectList.length === this.owner.data.length) {
+        val = false
       } else {
-        value = true
+        val = true
       }
-      return value
+      return val
+    }
+  },
+  watch: {
+    disabledData(val) {
+      console.log(val)
     }
   },
 
@@ -101,12 +104,7 @@ export default {
       this.cache.set(row, key)
       return key
     },
-    getDisabled(row) {
-      const current = this.owner.data.find((ele) => {
-        return ele.id === row.id
-      })
-      if (current) return current.disabled
-    },
+
     getRowIdentity(row, rowKey) {
       if (!row) throw new Error('row is required when get row identity')
       if (typeof rowKey === 'string') {
@@ -134,22 +132,37 @@ export default {
       } else {
         // 选中事件
         this.$emit('input', [...this.value, row])
-        this.$emit('selectChange', row)
+        // this.$emit('selectChange', row)
       }
     },
     handleAllSelect() {
+      let flag = false
+      let selectedList = []
+      let useableData = []
+      let temp = []
       for (const row of this.owner.data) {
-        if (this.selected[this.getKey(row)]) {
-          this.$emit('input', [])
-          this.$emit('allSelectChange', [])
+        if (!this.selected[this.getKey(row)]) {
+          flag = false
+          useableData = this.owner.data.filter((v) => v.disabled !== true)
+          temp = this.value.concat(useableData)
+          const obj = {}
+          // 对重复选中去重
+          temp = temp.reduce((cur, next) => {
+            if (!obj[this.getKey(next)]) {
+              obj[this.getKey(next)] = true
+              cur.push(next)
+            }
+            return cur
+          }, [])
         } else {
-          const useableData = this.owner.data.filter((v) => v.disabled !== true)
-          const temp = JSON.parse(JSON.stringify(useableData))
-
-          this.$emit('input', [...this.value, ...temp])
-          // this.$emit('allSelectChange', [...this.value, useableData])
+          // 所有选中的和当前页取消选择的，取差集
+          selectedList = this.value.filter((v) => {
+            return this.owner.data.every((e) => this.getKey(e) !== this.getKey(v))
+          })
+          flag = true
         }
       }
+      flag ? this.$emit('input', selectedList) : this.$emit('input', temp)
     }
   }
 }

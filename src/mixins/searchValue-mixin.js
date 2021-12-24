@@ -13,16 +13,6 @@ export default {
     // console.log('this.scrollHeight', this.scrollHeight)
     // const that = this
     // 大、小屏幕切换，页面自适应
-    window.onresize = () => {
-      return (() => {
-        const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-        // window.clientHeight = document.body.clientHeight
-        // that.clientHeight = window.clientHeight
-        // const ret = this.makeSearchTableData().scrollHeight
-        this.makeSearchTableData().scrollHeight = document.body.clientHeight - searchHeight - 135
-        // console.log(ret.scrollHeight)
-      })()
-    }
   },
   methods: {
     makeSearchTableData(options) {
@@ -40,8 +30,13 @@ export default {
         connect: (ref) => {
           ret.tableRef = ref
         },
+        // 用来汇报窗口大小变化
+        windowResize: (height) => {
+          ret.scrollHeight = height
+        },
         setState: (state) => {
           // Object.assign(ret, state)
+          console.log(state)
           ret.total = state.total
           ret.dataList = state.dataList
           ret.currentPage = state.currentPage

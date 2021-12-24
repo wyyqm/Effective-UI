@@ -6,7 +6,6 @@
                4.全选复选+disabled
                5.暴露出一些事件（参考elementUI）
                6.错误处理细化
-               7.分页绑定事件？分页如何封装
       -->
     <el-table :data="sell" size="mini" stripe row-key="id" @row-click="onRowClick">
       <ef-table-checkbox v-model="selected" disabledKey="disabled" @selectChange="selectChange" @allSelectChange="allSelectChange" />
