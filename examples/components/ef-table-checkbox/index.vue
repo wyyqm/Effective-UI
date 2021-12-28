@@ -1,10 +1,12 @@
 <template>
+  <!-- TODO:全选状态复杂优化
+      disable情况加上 -->
   <el-table-column :label="label" width="40">
     <template v-slot:header="{}">
       <el-checkbox :value="allSelected" @input="handleAllSelect()" :indeterminate="indeterminate" />
     </template>
     <template v-slot="{ row }">
-      <el-checkbox :key="getKey(row)" :value="!!selected[getKey(row)]" @input="handleCheckboxInput(row)" :disabled="row.disabled" />
+      <el-checkbox :key="getKey(row)" :value="!!selected[getKey(row)]" @input="handleCheckboxInput(row)" :disabled="disabledMap[getKey(row)]" />
     </template>
   </el-table-column>
 </template>
@@ -19,9 +21,9 @@ export default {
       required: true
     },
 
-    disabledData: {
+    disabledBy: {
       type: Function,
-      default: () => {}
+      default: () => () => false
     }
   },
   data() {
@@ -30,20 +32,32 @@ export default {
       cache: new WeakMap()
     }
   },
-  mounted() {
-    const disabledData = this.disabledData()
-    if (disabledData && disabledData.length > 0) {
-      this.owner.data.forEach((ele) => {
-        disabledData.forEach((v) => {
-          if (this.getKey(ele) === this.getKey(v)) {
-            ele.disabled = true
-          }
-        })
-      })
-    }
-    console.log(disabledData)
-  },
+
   computed: {
+    disabledMap() {
+      const map = {}
+      for (let i = 0; i < this.owner.data.length; i++) {
+        const item = this.owner.data[i]
+        map[this.getKey(item)] = this.disabledBy(item, i, this.owner.data)
+      }
+      return map
+    },
+    canUsedList() {
+      if (JSON.stringify(this.disabledMap) !== '{}') {
+        const canUsedLists = []
+        for (const key in this.disabledMap) {
+          if (!this.disabledMap[key]) {
+            canUsedLists.push(key)
+          }
+        }
+        const canUsed = this.owner.data.filter((v) => {
+          return canUsedLists.indexOf(this.getKey(v).toString()) !== -1
+        })
+        return canUsed
+      } else {
+        return this.owner.data
+      }
+    },
     owner() {
       let parent = this.$parent
       while (parent && !parent.tableId) {
@@ -59,32 +73,45 @@ export default {
       return map
     },
     allSelected() {
-      let val
-      for (const row of this.owner.data) {
-        if (!this.selected[this.getKey(row)]) {
-          val = false
-        } else {
-          val = true
+      // for (const row of this.owner.data) {
+      //   if (!this.selected[this.getKey(row)]) {
+      //     val = false
+      //   }  else {
+      //     val = true
+      //   }
+      // }
+      let selectedAll = false
+      let count = 0
+      if (this.value.length > 0) {
+        for (let i = 0; i < this.canUsedList.length; i++) {
+          for (let j = 0; j < this.value.length; j++) {
+            if (this.getKey(this.value[j]) === this.getKey(this.canUsedList[i])) {
+              count++
+              if (count === this.canUsedList.length) {
+                selectedAll = true
+              } else {
+                selectedAll = false
+              }
+            }
+          }
         }
+      } else {
+        selectedAll = false
       }
-      return val
+      return selectedAll
     },
     indeterminate() {
       let val
-      const selectList = this.owner.data.filter((v) => {
-        return Object.keys(this.selected).indexOf(this.getKey(v).toString()) !== -1
+      const isSelected = Object.keys(this.selected)
+      const selectList = this.canUsedList.filter((v) => {
+        return isSelected.indexOf(this.getKey(v).toString()) !== -1
       })
-      if (selectList.length === 0 || selectList.length === this.owner.data.length) {
+      if (selectList.length === 0 || selectList.length === this.canUsedList.length) {
         val = false
       } else {
         val = true
       }
       return val
-    }
-  },
-  watch: {
-    disabledData(val) {
-      console.log(val)
     }
   },
 
@@ -106,6 +133,7 @@ export default {
     },
 
     getRowIdentity(row, rowKey) {
+      // TODO:如果ownerdata为空的处理
       if (!row) throw new Error('row is required when get row identity')
       if (typeof rowKey === 'string') {
         if (rowKey.indexOf('.') < 0) {
@@ -136,33 +164,21 @@ export default {
       }
     },
     handleAllSelect() {
-      let flag = false
-      let selectedList = []
-      let useableData = []
-      let temp = []
-      for (const row of this.owner.data) {
-        if (!this.selected[this.getKey(row)]) {
-          flag = false
-          useableData = this.owner.data.filter((v) => v.disabled !== true)
-          temp = this.value.concat(useableData)
-          const obj = {}
-          // 对重复选中去重
-          temp = temp.reduce((cur, next) => {
-            if (!obj[this.getKey(next)]) {
-              obj[this.getKey(next)] = true
-              cur.push(next)
-            }
-            return cur
-          }, [])
-        } else {
-          // 所有选中的和当前页取消选择的，取差集
-          selectedList = this.value.filter((v) => {
-            return this.owner.data.every((e) => this.getKey(e) !== this.getKey(v))
-          })
-          flag = true
+      let checkedList = []
+      if (this.allSelected) {
+        // 所有选中的和当前页取消选择的，取差集
+        checkedList = this.value.filter((v) => {
+          return this.canUsedList.every((e) => this.getKey(e) !== this.getKey(v))
+        })
+        this.$emit('input', checkedList)
+      } else {
+        for (const item of this.canUsedList) {
+          if (!this.selected[this.getKey(item)]) {
+            checkedList.push(item)
+          }
         }
+        this.$emit('input', this.value.concat(checkedList))
       }
-      flag ? this.$emit('input', selectedList) : this.$emit('input', temp)
     }
   }
 }

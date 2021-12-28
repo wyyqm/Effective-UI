@@ -6,6 +6,7 @@
       :data="searchTable.dataList"
       tooltip-effect="dark"
       @sort-change="sort"
+      v-loading="searchTable.loading"
       :max-height="searchTable.scrollHeight"
       stripe
     >
@@ -15,21 +16,12 @@
   </div>
 </template>
 <script>
-import EfSearch from '../../components/ef-search/index.vue'
-import EfDatePicker from '../../components/ef-datePicker/index'
-import TyImagePreview from '@tuya-fe/ty-image-preview'
-import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
-import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfPagination from '../../components/ef-pagination/index.vue'
 import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
 export default {
   mixins: [searchValueMixin],
   inject: ['searchTable'],
   components: {
-    // TySpan,
-    // TyTimeSpan,
-    // TyImagePreview,
-    // EfTableCheckbox,
     EfPagination
   },
   props: {
@@ -49,7 +41,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(this.bodyWrapper)
     this.searchTable.connect(this.bodyWrapper)
     window.onresize = () => {
       return (() => {

@@ -8,13 +8,22 @@
     pagination单独封装起来 用mixins
 
     -->
+
+    <!-- 如果日期绑定两个值 如何清空 -->
     <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
       <template v-slot:searchConditon>
         <el-form-item label="订单名称：" prop="name">
           <el-input v-model="searchForm.name" clearable />
         </el-form-item>
         <el-form-item label="查询月：" prop="months">
-          <ef-datePicker v-model="searchForm.months" :timeFormat="true" :dateType="'month'"></ef-datePicker>
+          <!--v-model="searchForm.months"-->
+          <ef-datePicker
+            v-model="searchForm.months"
+            :startTime.sync="searchForm.startT"
+            :endTime.sync="searchForm.endT"
+            :timeFormat="true"
+            :dateType="'month'"
+          ></ef-datePicker>
         </el-form-item>
         <el-form-item prop="searchVal">
           <ef-input v-model="searchForm.searchVal" :options="options"></ef-input>
@@ -25,7 +34,7 @@
       </template>
     </ef-search>
     <ef-table-container @sortChange="sort" rowKey="id">
-      <ef-table-checkbox v-model="selected" @input="selectObj" :disabledData="disabledData" />
+      <ef-table-checkbox v-model="selected" @input="selectObj" :disabledBy="disabledBy" />
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
@@ -49,6 +58,11 @@
           <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
         </template>
       </el-table-column>
+      <!-- <el-table-column prop="address" label="多行文本">
+        <template slot-scope="scope">
+          <ty-span ellipsis inline-block>{{ scope.row.address }}</ty-span>
+        </template>
+      </el-table-column> -->
       <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
       <el-table-column prop="switch" label="开关">
         <template slot-scope="scope">
@@ -142,6 +156,8 @@ export default {
         fetchFn: this.init
       }),
       searchForm: {
+        startT: 0,
+        endT: 0,
         date: '',
         billArea: 'AZ',
         times: [],
@@ -168,8 +184,11 @@ export default {
         this.searchTable.dataList = res.data.content
         this.searchTable.currentPage = res.data.pageIndex
         this.searchTable.total = res.data.total
+        this.searchTable.loading = false
+        this.searchTable.dataList.forEach((item) => {
+          return item.id > 60000000 ? this.selected.push(item) : null
+        })
       })
-      console.log(this.searchTable.dataList)
     },
     selectObj() {
       console.log(this.selected)
@@ -178,12 +197,8 @@ export default {
       console.log(val)
       // to do sth
     },
-    disabledData() {
-      console.log(this.searchTable.dataList)
-      const arr = this.searchTable.dataList.filter((item) => {
-        return item.id > 44000000
-      })
-      return arr
+    disabledBy(value, index, array) {
+      return value.id > 34000000
     },
     sort(val) {
       console.log(val)

@@ -6,10 +6,10 @@
     </el-form>
     <div class="searchBtn">
       <slot></slot>
-      <el-button type="primary" @click="handleSearch" icon="el-icon-search"> 搜索 </el-button>
-      <el-button type="primary" @click="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
+      <el-button type="primary" @click.native="handleSearch" icon="el-icon-search"> 搜索 </el-button>
+      <el-button type="primary" @click.native="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
       <slot name="handleBtn"></slot>
-      <el-button type="text" v-if="hasMore" @click="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
+      <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
     </div>
   </div>
 </template>

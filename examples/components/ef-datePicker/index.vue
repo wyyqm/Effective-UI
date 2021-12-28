@@ -50,6 +50,14 @@ export default {
       type: String,
       default: 'daterange',
       required: true
+    },
+    startTime: {
+      type: [String, Number],
+      default: ''
+    },
+    endTime: {
+      type: [String, Number],
+      default: ''
     }
   },
   data() {
@@ -67,11 +75,16 @@ export default {
           if (this.value) {
             formatedTime = moment(parseInt(this.value[0]))
           }
+          if (this.startTime) {
+            formatedTime = moment(parseInt(this.startTime))
+          }
           return formatedTime
         case 'year':
           if (this.value) {
-            console.log(this.value)
             formatedTime = moment(parseInt(this.value[0]))
+          }
+          if (this.startTime) {
+            formatedTime = moment(parseInt(this.startTime))
           }
           return formatedTime
         case 'daterange':
@@ -79,6 +92,11 @@ export default {
             formatedTime[0] = moment(parseInt(this.value[0]))
             formatedTime[1] = moment(parseInt(this.value[1]))
           }
+          if (this.startTime && this.endTime) {
+            formatedTime[0] = moment(parseInt(this.startTime))
+            formatedTime[1] = moment(parseInt(this.endTime))
+          }
+
           return formatedTime
         default:
           return this.value
@@ -116,6 +134,8 @@ export default {
     timeChange($event) {
       const times = this.timeFormat ? this.formatTime($event) : $event
       this.$emit('input', times)
+      this.$emit('update:startTime', times[0])
+      this.$emit('update:endTime', times[1])
     }
   }
 }

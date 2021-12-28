@@ -5,15 +5,7 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    // const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-    // // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
-    // // const clientHeight = document.body.clientHeight
-    // this.scrollHeight = this.clientHeight - searchHeight - 125
-    // console.log('this.scrollHeight', this.scrollHeight)
-    // const that = this
-    // 大、小屏幕切换，页面自适应
-  },
+  mounted() {},
   methods: {
     makeSearchTableData(options) {
       const { fetchFn } = options
@@ -36,10 +28,9 @@ export default {
         },
         setState: (state) => {
           // Object.assign(ret, state)
-          console.log(state)
-          ret.total = state.total
-          ret.dataList = state.dataList
           ret.currentPage = state.currentPage
+          ret.pageSize = state.pageSize
+          ret.formValues = state.formValues
         },
         // 展开收起
         expend() {
@@ -48,13 +39,16 @@ export default {
           ret.scrollHeight = document.body.clientHeight - searchHeight - 125
         },
         handleSizeChange: (val) => {
+          ret.loading = true
+
+          ret.currentPage = 1
           const params = {
             pageSize: val,
             currentPage: ret.currentPage,
             ...ret.formValues
           }
 
-          fetchFn(params, ret.setState)
+          fetchFn(params, ret.setState(params))
           // 翻页回到表格顶部
 
           Vue.nextTick(() => {
@@ -62,37 +56,41 @@ export default {
           })
         },
         handleCurrentChange: (val) => {
+          ret.loading = true
+
           const params = {
             currentPage: val,
             pageSize: ret.pageSize,
-
             ...ret.formValues
           }
 
-          fetchFn(params, ret.setState)
+          fetchFn(params, ret.setState(params))
           // 翻页回到表格顶部
           Vue.nextTick(() => {
             ret.tableRef.bodyWrapper.scrollTop = 0
           })
         },
         handleSearch: (formValues) => {
+          ret.loading = true
+
           ret.formValues = cloneDeep(formValues)
           ret.currentPage = 1
-          const params = {
-            currentPage: 1,
-            pageSize: ret.pageSize,
-            ...ret.formValues
-          }
-
-          fetchFn(params, ret.setState)
-        },
-        init: () => {
           const params = {
             currentPage: ret.currentPage,
             pageSize: ret.pageSize,
             ...ret.formValues
           }
-          fetchFn(params, ret.setState)
+
+          fetchFn(params, ret.setState(params))
+        },
+        init: () => {
+          ret.loading = true
+          const params = {
+            currentPage: ret.currentPage,
+            pageSize: ret.pageSize,
+            ...ret.formValues
+          }
+          fetchFn(params, ret.setState(params))
         }
       })
 
