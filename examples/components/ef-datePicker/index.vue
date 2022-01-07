@@ -27,7 +27,7 @@ import moment from 'moment'
  ** dateType: 必选：日期类型。可能是年月日或者range
  ** placeholder: 可选：可以传入，默认显示“请选择”
  ** eg:
- ** <efDatePicker v-model="times"  :timeFormat="true" :dateType="'daterange'" ></efDatePicker>
+ ** <efDatePicker v-model="times"  timeFormat :dateType="'daterange'" ></efDatePicker>
  */
 export default {
   props: {
@@ -39,7 +39,7 @@ export default {
     timeFormat: {
       type: Boolean,
       default: true,
-      required: false
+      required: true
     },
     pickerOptions: {
       type: Object,

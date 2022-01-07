@@ -40,8 +40,6 @@
       </el-table-column>
       <el-table-column prop="handle" label="操作">
         <template slot-scope="scope">
-          <!-- <ef-table-operate>
-            <template v-slot:tableOperate> -->
           <el-button type="text">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
@@ -51,8 +49,6 @@
           <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
             <el-button slot="reference" type="text">审核</el-button>
           </el-popconfirm>
-          <!-- </template>
-          </ef-table-operate> -->
         </template>
       </el-table-column>
     </el-table>
@@ -76,11 +72,9 @@
 import moment from 'moment'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import TySpan from '@tuya-fe/ty-span'
-import EfTableOperate from '../ef-table-operate/index.vue'
 export default {
   name: 'searchRow',
   components: {
-    // EfTableOperate,
     TyImagePreview,
     TySpan
   },

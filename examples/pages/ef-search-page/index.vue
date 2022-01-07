@@ -1,50 +1,42 @@
 <template>
-  <div>
-    <!-- TODO: 1. 包装器 将table和分页包起来
-    当table加载完成汇报给包装器ref绑好了
-    然后更新回到顶部的问题
-    2.分页绑定的方法太多 用包装器获取到VNode后把绑定的塞进去
-    provider？inject？context mixins 上下文获取方法
-    pagination单独封装起来 用mixins
-
-    -->
-
-    <!-- 如果日期绑定两个值 如何清空 -->
-    <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
-      <template v-slot:searchConditon>
+  <!-- 页面三个自动布局 清空搜索条件的参考el-form源码 -->
+  <ef-search-list-container :searchList="searchTable" initOnMounted>
+    <section>
+      <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
+        <el-form-item label="订单名称：" prop="name">
+          <el-input v-model="searchForm.name" clearable />
+        </el-form-item>
         <el-form-item label="订单名称：" prop="name">
           <el-input v-model="searchForm.name" clearable />
         </el-form-item>
         <el-form-item label="查询月：" prop="months">
-          <!--v-model="searchForm.months"-->
-          <ef-datePicker
-            v-model="searchForm.months"
-            :startTime.sync="searchForm.startT"
-            :endTime.sync="searchForm.endT"
-            :timeFormat="true"
-            :dateType="'month'"
-          ></ef-datePicker>
+          <!-- :startTime.sync="searchForm.startT"
+            :endTime.sync="searchForm.endT""-->
+          <ef-datePicker v-model="searchForm.months" timeFormat :dateType="'month'"></ef-datePicker>
         </el-form-item>
         <el-form-item prop="searchVal">
           <ef-input v-model="searchForm.searchVal" :options="options"></ef-input>
         </el-form-item>
+
         <el-form-item label="查询日期：" prop="times">
-          <ef-datePicker v-model="searchForm.times" :timeFormat="true" :dateType="'daterange'"></ef-datePicker>
+          <ef-datePicker v-model="searchForm.times" :timeFormat="false" :dateType="'daterange'"></ef-datePicker>
         </el-form-item>
-      </template>
-    </ef-search>
-    <ef-table-container @sortChange="sort" rowKey="id" @sizeChange="handleSizeChange">
-      <ef-table-checkbox v-model="selected" @input="selectObj" :disabledBy="disabledBy" />
+      </ef-search>
+    </section>
+    <section>
+      <el-button type="primary"> hahhahah</el-button>
+    </section>
+    <el-table stripe :data="searchTable.dataList" v-loading="searchTable.loading" rowKey="id">
+      <ef-table-checkbox v-model="selected" @input="selectObj" />
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">
         <template slot-scope="scope">
           <div v-if="scope.row.src">
-            <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 100px" />
+            <ty-image-preview :src="scope.row.src" style="width: 100px" />
           </div>
           <div v-else>--</div>
         </template>
       </el-table-column>
-      <!--远程排序 @sort-change-->
       <el-table-column label="时间列" prop="date" sortable="custom">
         <template slot-scope="scope">
           <ty-time-span block :value="scope.row.date" />
@@ -77,19 +69,33 @@
           </el-popconfirm>
         </template>
       </el-table-column>
-    </ef-table-container>
-  </div>
+    </el-table>
+
+    <!-- <template slot="action">
+      <el-button></el-button>
+    </template> -->
+
+    <ef-pagination>
+      <!-- <div>
+        <el-button type="primary">下载</el-button>
+        <el-button type="primary" plain> 导出</el-button>
+      </div> -->
+    </ef-pagination>
+  </ef-search-list-container>
 </template>
+
 <script>
-import EfSearch from '../../components/ef-search/index.vue'
+import { makeSearchTableData } from '../../utils/common-search-methods'
+import EfPagination from '../../components/ef-pagination'
+import EfSearch from '../../components/ef-search'
+import EfSearchListContainer from '../el-search-list-container'
+import Mock from 'mockjs'
 import EfDatePicker from '../../components/ef-datePicker/index'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
-import Mock from 'mockjs'
-import { makeSearchTableData } from '../../utils/common-search-methods'
-import EfTableContainer from '../el-table-container/index.vue'
 import EfInput from '../../components/ef-selectInput/index'
+
 const data = {
   'list|1000': [
     {
@@ -126,18 +132,18 @@ async function getData({ currentPage, pageSize, name }) {
     }
   }
 }
-
 export default {
-  name: 'searchPage',
+  name: 'searchlist',
   components: {
+    EfPagination,
     EfSearch,
-    EfDatePicker,
-    EfTableContainer,
-    TyImagePreview,
-    TySpan,
-    TyTimeSpan,
+    EfSearchListContainer,
     EfInput,
-    EfTableCheckbox
+    EfDatePicker,
+    EfTableCheckbox,
+    TySpan,
+    TyImagePreview,
+    TyTimeSpan
   },
   provide() {
     return {
@@ -168,12 +174,11 @@ export default {
     }
   },
   created() {
+    // console.log(this.searchTable)
     this.searchTable.init()
   },
-
   methods: {
     init(params) {
-      // 如果需要对查询参数处理，就对params处理即可
       getData(params).then((res) => {
         this.searchTable.dataList = res.data.content
         this.searchTable.currentPage = res.data.pageIndex
@@ -184,29 +189,11 @@ export default {
         // })
       })
     },
-    selectObj() {
-      console.log(this.selected)
-    },
-    delCur(val) {
-      console.log(val)
-      // to do sth
-    },
     disabledBy(value, index, array) {
       return value.id > 34000000
     },
-    sort(val) {
-      console.log(val)
-    },
-    onOpen() {
-      console.log('open')
-    },
-    onClose() {
-      console.log('close')
-    },
-    handleSizeChange(val) {
-      // console.log(val)
-    }
+    sort() {},
+    selectObj() {}
   }
 }
 </script>
-<style scoped lang="less"></style>

@@ -12,14 +12,18 @@
     >
       <slot></slot>
     </el-table>
-    <ef-pagination></ef-pagination>
+    <ef-pagination
+      @sizeChange="handleSizeChange"
+      @pageChange="handleCurrentChange"
+      :pagesizeOptions="pagesizeOptions"
+      :layout="layout"
+    ></ef-pagination>
   </div>
 </template>
 <script>
 import EfPagination from '../../components/ef-pagination/index.vue'
 import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
 export default {
-  mixins: [searchValueMixin],
   inject: ['searchTable'],
   components: {
     EfPagination
@@ -28,6 +32,14 @@ export default {
     rowKey: {
       type: String,
       value: 'id'
+    },
+    pagesizeOptions: {
+      type: Array,
+      default: () => [10, 20, 50, 100]
+    },
+    layout: {
+      type: String,
+      default: 'total, sizes, prev, pager, next, jumper'
     }
   },
   data() {
@@ -54,6 +66,12 @@ export default {
     sort(val) {
       // console.log(val)
       this.$emit('sortChange', val)
+    },
+    handleSizeChange(val) {
+      this.$emit('sizeChange', val)
+    },
+    handleCurrentChange(val) {
+      this.$emit('pageChange', val)
     }
   }
 }

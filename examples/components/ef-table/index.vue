@@ -1,12 +1,5 @@
 <template>
   <div>
-    <!-- TODO: 1.disabled
-               2.点击行选中
-               3.性能优化getkey
-               4.全选复选+disabled
-               5.暴露出一些事件（参考elementUI）
-               6.错误处理细化
-      -->
     <el-table :data="sell" size="mini" stripe row-key="id" @row-click="onRowClick">
       <ef-table-checkbox v-model="selected" disabledKey="disabled" @selectChange="selectChange" @allSelectChange="allSelectChange" />
       <el-table-column label="商品 ID" prop="id" />

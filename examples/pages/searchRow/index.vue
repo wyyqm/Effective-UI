@@ -21,14 +21,85 @@
         </el-form-item>
       </template>
     </ef-search>
-    <Table
+    <!-- <Table
       :height="scrollHeight"
       :tableData="tableData"
       :total="totals"
-      :currentPage.sync="currentPage"
+      :pageIndex.sync="pageIndex"
       :pageSize.sync="pageSize"
       @tableDataChange="tableDataChange"
-    ></Table>
+    ></Table> -->
+    <div class="table">
+      <el-table
+        ref="multipleTable"
+        :data="tableData"
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+        @sort-change="sort"
+        :max-height="height ? height : 500"
+        :row-key="getRowKeys"
+        stripe
+      >
+        <el-table-column type="selection" :reserve-selection="true"> </el-table-column>
+        <el-table-column label="单行文本" prop="orderName"> </el-table-column>
+        <el-table-column label="图片列" prop="orderId">
+          <template slot-scope="scope">
+            <div v-if="scope.row.src">
+              <ty-image-preview :src="scope.row.src" @open="onOpen" @close="onClose" style="width: 100px" />
+            </div>
+            <div v-else>--</div>
+          </template>
+        </el-table-column>
+        <!--远程排序 @sort-change-->
+        <el-table-column label="时间列" prop="date" sortable="custom" :formatter="(row) => formatTime(row.date, 'YYYY-MM-DD HH:mm:ss')">
+        </el-table-column>
+        <el-table-column label="状态列">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">
+              <ty-span color="#f56c6c">未支付</ty-span>
+            </span>
+            <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
+        <el-table-column prop="switch" label="开关">
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.switch"> </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="handle" label="操作">
+          <template slot-scope="scope">
+            <!-- <ef-table-operate>
+            <template v-slot:tableOperate> -->
+            <el-button type="text">编辑</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
+              <el-button slot="reference" type="text">删除</el-button>
+            </el-popconfirm>
+            <el-divider direction="vertical"></el-divider>
+            <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
+              <el-button slot="reference" type="text">审核</el-button>
+            </el-popconfirm>
+            <!-- </template>
+          </ef-table-operate> -->
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageIndex"
+          :page-sizes="[5, 10, 20, 50]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+        >
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,6 +109,9 @@ import Table from '../../components/table/index.vue'
 import EfSearch from '../../components/ef-search/index.vue'
 import EfDatePicker from '../../components/ef-datePicker/index'
 import EfInput from '../../components/ef-selectInput/index'
+import moment from 'moment'
+import TyImagePreview from '@tuya-fe/ty-image-preview'
+import TySpan from '@tuya-fe/ty-span'
 export default {
   name: 'searchRow',
   components: {
@@ -45,11 +119,13 @@ export default {
     EfSearch,
     EfDatePicker,
     EfInput,
-    Table
+    TySpan,
+    TyImagePreview
   },
   data() {
     return {
       hasMore: false,
+      height: '',
       formData: {
         times: [],
         months: [],
@@ -88,12 +164,13 @@ export default {
         }
       ],
       totals: 10,
-      currentPage: 1,
+      pageIndex: 1,
       pageSize: 5,
       exportLoading: false,
       delLoading: false,
       dialogVisible: false,
       tableData: [],
+      total: 0,
       loading: false,
       clientHeight: document.body.clientHeight,
       scrollHeight: document.body.clientHeight
@@ -101,7 +178,11 @@ export default {
   },
 
   mounted() {
-    this.init()
+    const params = {
+      pageIndex: this.pageIndex,
+      pageSize: this.pageSize
+    }
+    this.handleSearch(params)
     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
     // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
     this.scrollHeight = this.clientHeight - searchHeight - 125
@@ -118,6 +199,23 @@ export default {
   },
 
   methods: {
+    handleSearch(params) {
+      this.$axios({
+        url: '/parameter/query',
+        method: 'get',
+        params: {
+          pageIndex: params.pageIndex,
+          pageSize: params.pageSize
+          // ...this.params
+        }
+      }).then((res) => {
+        this.loading = false
+
+        this.tableData = res.data.data.content
+        this.pageIndex = res.data.data.pageIndex
+        this.total = res.data.data.total
+      })
+    },
     expend() {
       // 展开收起的时候 表格高度要自适应可视区域
       const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
@@ -125,53 +223,79 @@ export default {
       console.log(searchHeight)
       this.scrollHeight = this.clientHeight - searchHeight - 145
     },
-    init() {
-      this.$axios({
-        url: '/parameter/query',
-        method: 'get',
-        params: {
-          pageIndex: this.currentPage,
-          pageSize: this.pageSize,
-          ...this.params
-        }
-      }).then((res) => {
-        // this.loading = false
-        this.tableData = res.data.data.content
-        this.currentPage = res.data.data.pageIndex
-        this.totals = res.data.data.total
-      })
-    },
-    tableDataChange() {
-      this.init()
+    // 反选参数
+    getRowKeys(row) {
+      return row.id
     },
 
-    // 搜索
-    handleSearch() {
-      this.init()
-      // console.log(this.searchForm)
+    // 分页选中
+    toggleSelection() {
+      this.tableData.forEach((item) => {
+        this.selectedData.forEach((ele) => {
+          if (item.orderId === ele.orderId) {
+            this.$refs.multipleTable.toggleRowSelection(item)
+          }
+        })
+      })
     },
-    // 重置
-    reset() {},
-    // 搜索条件change
-    selectChange() {
-      this.searchForm.searchVal = ''
+    // 当前页选中
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      this.selectedData = []
+      if (val) {
+        val.forEach((row) => {
+          if (row) {
+            this.selectedData.push(val[0])
+          }
+        })
+      }
     },
-    loadingChange(val) {
-      this.loading = val
+    delCur(val) {
+      console.log(val)
+      // to do sth
     },
-    billDataChange(val) {
-      this.billData = val
+    formatTime(time) {
+      if (time) {
+        return moment(Number(time)).format('YYYY-MM-DD HH:mm:ss')
+      }
     },
-    // 新建
-    add() {},
-    // 导出
-    educed() {
-      this.exportLoading = true
-      setTimeout(() => {
-        this.exportLoading = false
-      }, 2000)
+    sort(val) {
+      console.log(val)
     },
-    confirm() {}
+    onOpen() {
+      console.log('open')
+    },
+    onClose() {
+      console.log('close')
+    },
+    handleSizeChange(val) {
+      this.pageSize = val
+      const params = {
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      }
+
+      this.handleSearch(params)
+      this.toggleSelection()
+      // 翻页回到表格顶部
+      this.$nextTick(() => {
+        this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+      })
+    },
+    handleCurrentChange(val) {
+      this.pageIndex = val
+      const params = {
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      }
+
+      this.handleSearch(params)
+      this.toggleSelection()
+      // 翻页回到表格顶部
+      this.$nextTick(() => {
+        this.$refs.multipleTable.bodyWrapper.scrollTop = 0
+      })
+    }
   }
 }
 </script>

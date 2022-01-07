@@ -1,16 +1,26 @@
 <template>
   <!-- TODO：重置 搜索 按照 htmlType  form表单事件native事件 -->
   <div class="search">
-    <el-form :inline="true" size="small" :model="model" ref="searchForm" class="searchForm">
-      <slot name="searchConditon"></slot>
+    <el-form
+      :inline="true"
+      size="small"
+      :model="model"
+      ref="searchForm"
+      class="searchForm"
+      @submit.native.prevent="handleSearch"
+      @reset.native.prevent="reset"
+    >
+      <div>
+        <slot></slot>
+      </div>
+      <div class="searchBtn">
+        <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
+        <slot name="searchBtn">
+          <el-button type="primary" native-type="submit" icon="el-icon-search"> 搜索 </el-button>
+          <el-button type="primary" native-type="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
+        </slot>
+      </div>
     </el-form>
-    <div class="searchBtn">
-      <slot></slot>
-      <el-button type="primary" @click.native="handleSearch" icon="el-icon-search"> 搜索 </el-button>
-      <el-button type="primary" @click.native="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
-      <slot name="handleBtn"></slot>
-      <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
-    </div>
   </div>
 </template>
 <script>
@@ -28,86 +38,16 @@ export default {
     return {
       expend: false,
       hasMore: false,
-      quickOptions: {
-        shortcuts: [
-          {
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: '本周',
-            onClick(picker) {
-              const now = new Date()
-              const WeekFirstDay = new Date(now - (now.getDay() - 1) * 86400000)
-              const WeekLastDay = new Date((WeekFirstDay / 1000 + 6 * 86400) * 1000)
-              picker.$emit('pick', [WeekFirstDay, WeekLastDay])
-            }
-          },
-          {
-            text: '本月',
-            onClick(picker) {
-              console.log(new Date().getYear())
 
-              const now = new Date()
-              const MonthFirstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-              const MonthNextFirstDay = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-              const MonthLastDay = new Date(MonthNextFirstDay - 86400000)
-              picker.$emit('pick', [MonthFirstDay, MonthLastDay])
-            }
-          }
-        ]
-      },
-      searchForm: {},
-      options: [
-        { label: '今天签约吧账号梦', value: 'today' },
-        { label: 'ming天', value: 'tomorrow' }
-      ]
+      searchForm: {}
     }
   },
   mounted() {
     this.toggleExpend()
-    // this.handleSearch()
-    // const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-    // // 滚动高度 = 可视高度-搜索条件高度-（翻页高度+边距+表头）
-    // this.scrollHeight = this.clientHeight - searchHeight - 125
-    // const that = this
-    // // 大、小屏幕切换，页面自适应
-    // window.onresize = () => {
-    //   return (() => {
-    //     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-    //     window.clientHeight = document.body.clientHeight
-    //     that.clientHeight = window.clientHeight
-    //     this.scrollHeight = that.clientHeight - searchHeight - 80 - 45
-    //   })()
-    // }
   },
 
   methods: {
     handleSearch() {
-      // console.log(this.model)
       this.$emit('search', this.model)
     },
     // 展开收起
@@ -133,23 +73,18 @@ export default {
       // console.log(this.$refs.searchForm)
       this.$refs.searchForm.resetFields()
       this.$emit('search', this.model)
-      // for (const item in this.searchForm) {
-      //   console.log(this.searchForm[item])
-      //   // if()
-      // }
     }
   }
 }
 </script>
 <style lang="less" scoped>
 .search {
-  display: flex;
-  flex-wrap: wrap;
   .searchBtn {
-    width: 200px;
+    white-space: nowrap;
   }
   .searchForm {
-    width: calc(100% - 200px);
+    display: flex;
+    justify-content: space-between;
   }
   .el-form {
     text-align: left;

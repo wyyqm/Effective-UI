@@ -1,8 +1,9 @@
 <template>
   <div class="pagination">
+    <slot></slot>
     <el-pagination
-      @size-change="searchTable.handleSizeChange"
-      @current-change="searchTable.handleCurrentChange"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
       :current-page="searchTable.currentPage"
       :page-sizes="pagesizeOptions"
       :page-size="searchTable.pageSize"
@@ -30,20 +31,35 @@ export default {
   },
   data() {
     return {}
+  },
+  // 吐出size和page,change的方法，适用于分页状态改变影响到的业务逻辑
+  methods: {
+    handleSizeChange(val) {
+      this.$emit('size-change', val)
+      this.searchTable.handleSizeChange(val)
+    },
+    handleCurrentChange(val) {
+      this.$emit('current-change', val)
+      this.searchTable.handleCurrentChange(val)
+    }
   }
 }
 </script>
 <style lang="less">
 .pagination {
-  position: fixed;
-  bottom: 0;
-  right: 0;
+  // position: fixed;
+  // bottom: 0;
+  // right: 0;
   padding: 5px 30px;
   box-sizing: border-box;
   background: #fff;
   border-top: 1px solid #f1f1f1;
-  width: calc(100% - 220px);
+  // width: calc(100% - 220px);
   z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-direction: column;
   .el-pagination {
     text-align: right;
   }

@@ -1,6 +1,4 @@
 <template>
-  <!-- TODO:全选状态复杂优化
-      disable情况加上 -->
   <el-table-column :label="label" width="40">
     <template v-slot:header="{}">
       <el-checkbox :value="allSelected" @input="handleAllSelect()" :indeterminate="indeterminate" />
@@ -23,7 +21,7 @@ export default {
 
     disabledBy: {
       type: Function,
-      default: () => () => false
+      default: () => false
     }
   },
   data() {
@@ -53,6 +51,7 @@ export default {
         const canUsed = this.owner.data.filter((v) => {
           return canUsedLists.indexOf(this.getKey(v).toString()) !== -1
         })
+
         return canUsed
       } else {
         return this.owner.data
@@ -133,7 +132,6 @@ export default {
     },
 
     getRowIdentity(row, rowKey) {
-      // TODO:如果ownerdata为空的处理
       if (!row) throw new Error('row is required when get row identity')
       if (typeof rowKey === 'string') {
         if (rowKey.indexOf('.') < 0) {
