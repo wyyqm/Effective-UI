@@ -1,0 +1,22 @@
+import { Meta, Story } from '@storybook/addon-docs';
+
+import EfTable from './index';
+
+<Meta title="EfTable" component={EfTable} />
+
+export const Template = (args, { argTypes }) => ({
+  props: Object.keys(argTypes),
+  components: { EfTable },
+  template: `<ef-table v-bind="$props" v-on="$props" />`,
+});
+
+
+<Story
+  name="Primary"
+  args={{
+    primary: true,
+    label: 'Table',
+    data: []
+  }}>
+  {Template.bind({})}
+</Story>
