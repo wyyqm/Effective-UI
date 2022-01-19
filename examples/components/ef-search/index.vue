@@ -1,20 +1,19 @@
 <template>
-  <!-- TODO：重置 搜索 按照 htmlType  form表单事件native事件 -->
-  <div class="search">
+  <div class="ef-search">
     <el-form
       :inline="true"
       size="small"
       :model="model"
       ref="searchForm"
-      class="searchForm"
+      class="ef-searchForm"
       @submit.native.prevent="handleSearch"
       @reset.native.prevent="reset"
     >
       <div>
         <slot></slot>
       </div>
-      <div class="searchBtn">
-        <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ expend ? '展开' : '收起' }} </el-button>
+      <div class="ef-searchBtn">
+        <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ !expend ? '展开' : '收起' }} </el-button>
         <slot name="searchBtn">
           <el-button type="primary" native-type="submit" icon="el-icon-search"> 搜索 </el-button>
           <el-button type="primary" native-type="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
@@ -39,33 +38,43 @@ export default {
       expend: false,
       hasMore: false,
 
-      searchForm: {}
+      searchForm: {},
+      searchHeight: 0
     }
   },
   mounted() {
-    this.toggleExpend()
+    this.setHeight()
+    window.onresize = () => {
+      // 每次窗口变化都重置search高度
+      document.querySelectorAll('.searchForm')[0].setAttribute('style', 'height:auto')
+      return (() => {
+        this.setHeight()
+      })()
+    }
   },
-
+  destroyed() {
+    window.onresize = null
+  },
   methods: {
     handleSearch() {
       this.$emit('search', this.model)
     },
+    setHeight() {
+      this.searchHeight = document.querySelectorAll('.ef-search')[0].clientHeight
+      if (this.searchHeight > 50) {
+        this.hasMore = true
+        document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', 'height:50px;overflow:hidden')
+      } else {
+        this.hasMore = false
+      }
+    },
     // 展开收起
     toggleExpend() {
       this.expend = !this.expend
-      const searchItem = document.querySelectorAll('.el-form-item--small')
-      if (searchItem.length > 3) {
-        // 搜索条件小于等于三个不展示展开收起
-        this.hasMore = true
-        searchItem.forEach((ele, i) => {
-          if (i > 2 && i < searchItem.length) {
-            if (this.expend) {
-              ele.setAttribute('style', 'display: none')
-            } else {
-              ele.setAttribute('style', 'display: inline-block')
-            }
-          }
-        })
+      if (this.expend) {
+        document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', `height:${this.searchHeight}px`)
+      } else {
+        document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', 'height:50px;overflow:hidden')
       }
       this.$emit('expend', this.expend)
     },
@@ -78,11 +87,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.search {
-  .searchBtn {
+.ef-search {
+  .ef-searchBtn {
     white-space: nowrap;
   }
-  .searchForm {
+  .ef-searchForm {
     display: flex;
     justify-content: space-between;
   }

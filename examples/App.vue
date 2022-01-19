@@ -3,7 +3,7 @@
     <el-container class="container">
       <el-header class="header">Header</el-header>
       <el-container>
-        <el-aside width="220px" class="aside">
+        <el-aside width="200px" class="aside">
           <el-menu default-active="1" class="el-menu-vertical-demo">
             <el-submenu index="1">
               <template slot="title">

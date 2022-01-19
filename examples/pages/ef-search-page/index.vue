@@ -2,12 +2,13 @@
   <!-- 页面三个自动布局 清空搜索条件的参考el-form源码 -->
   <ef-search-list-container :searchList="searchTable" initOnMounted>
     <section>
-      <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.handleSearch(searchForm)">
+      <ef-search :model="searchForm" @expend="searchTable.expend" @search="searchTable.init(searchForm)">
         <el-form-item label="订单名称：" prop="name">
           <el-input v-model="searchForm.name" clearable />
         </el-form-item>
-        <el-form-item label="订单名称：" prop="name">
-          <el-input v-model="searchForm.name" clearable />
+        <el-form-item label="查询日期：" prop="times">
+          <ef-datePicker v-model="searchForm.datetime" :timeFormat="false" :dateType="'datetime'"></ef-datePicker>
+          <!-- <ef-datePicker v-model="searchForm.times" timeFormat :dateType="'datetimerange'"></ef-datePicker> -->
         </el-form-item>
         <el-form-item label="查询月：" prop="months">
           <!-- :startTime.sync="searchForm.startT"
@@ -17,13 +18,9 @@
         <el-form-item prop="searchVal">
           <ef-input v-model="searchForm.searchVal" :options="options"></ef-input>
         </el-form-item>
-
-        <el-form-item label="查询日期：" prop="times">
-          <ef-datePicker v-model="searchForm.times" :timeFormat="false" :dateType="'daterange'"></ef-datePicker>
-        </el-form-item>
       </ef-search>
     </section>
-    <section>
+    <section class="btn">
       <el-button type="primary"> hahhahah</el-button>
     </section>
     <el-table stripe :data="searchTable.dataList" v-loading="searchTable.loading" rowKey="id">
@@ -76,10 +73,10 @@
     </template> -->
 
     <ef-pagination>
-      <!-- <div>
+      <div class="footerBtn">
         <el-button type="primary">下载</el-button>
         <el-button type="primary" plain> 导出</el-button>
-      </div> -->
+      </div>
     </ef-pagination>
   </ef-search-list-container>
 </template>
@@ -161,8 +158,9 @@ export default {
         date: '',
         billArea: 'AZ',
         times: [],
+        datetime: '',
         months: [],
-        name: '',
+        name: '123',
         searchVal: {},
         billAreaValue: ''
       },
@@ -175,10 +173,11 @@ export default {
   },
   created() {
     // console.log(this.searchTable)
-    this.searchTable.init()
+    this.searchTable.init(this.searchForm)
   },
   methods: {
     init(params) {
+      params.datetime = params.datetime ? new Date(params.datetime).getTime() : ''
       getData(params).then((res) => {
         this.searchTable.dataList = res.data.content
         this.searchTable.currentPage = res.data.pageIndex
@@ -197,3 +196,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.btn {
+  text-align: left;
+  margin-bottom: 10px;
+}
+.footerBtn {
+  display: inline-block;
+}
+</style>

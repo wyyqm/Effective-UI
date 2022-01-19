@@ -9,7 +9,7 @@
       range-separator="至"
       start-placeholder="开始时间"
       end-placeholder="结束时间"
-      :class="dateType === 'daterange' ? 'long' : 'normal'"
+      :class="getStyles()"
       @input="timeChange"
       :picker-options="pickerOptions"
       :placeholder="'请选择'"
@@ -32,7 +32,7 @@ import moment from 'moment'
 export default {
   props: {
     value: {
-      type: [Array, Date],
+      type: [Array, Date, String],
       default: () => [],
       required: true
     },
@@ -98,12 +98,33 @@ export default {
           }
 
           return formatedTime
+        case 'datetimerange':
+          if (this.value.length > 0) {
+            formatedTime[0] = moment(parseInt(this.value[0]))
+            formatedTime[1] = moment(parseInt(this.value[1]))
+          }
+          if (this.startTime && this.endTime) {
+            formatedTime[0] = moment(parseInt(this.startTime))
+            formatedTime[1] = moment(parseInt(this.endTime))
+          }
+
+          return formatedTime
         default:
           return this.value
       }
     }
   },
   methods: {
+    // 样式处理
+    getStyles() {
+      if (this.dateType === 'datetimerange') {
+        return 'long'
+      } else if (this.dateType === 'month' || this.dateType === 'year' || this.dateType === 'week') {
+        return 'small'
+      } else {
+        return 'normal'
+      }
+    },
     // 格式化成时间戳 返给父组件
     formatTime(times) {
       const formatedTime = []
@@ -126,6 +147,12 @@ export default {
             formatedTime[1] = times[1].getTime()
           }
           return formatedTime
+        case 'datetimerange':
+          if (times) {
+            formatedTime[0] = times[0].getTime()
+            formatedTime[1] = times[1].getTime()
+          }
+          return formatedTime
         default:
           return this.value
       }
@@ -142,9 +169,12 @@ export default {
 </script>
 <style lang="less" scoped>
 .long {
-  width: 250px !important;
+  width: 400px !important;
 }
 .normal {
+  width: 250px !important;
+}
+.small {
   width: 180px !important;
 }
 </style>

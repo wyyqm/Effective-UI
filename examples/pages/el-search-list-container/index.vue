@@ -23,14 +23,18 @@ export default {
   },
   created() {},
   mounted() {
-    this.searchTable.connect(this.bodyWrapper)
-    window.onresize = () => {
-      return (() => {
-        const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-        const scrollHeight = document.body.clientHeight - searchHeight - 125
-        this.searchTable.windowResize(scrollHeight)
-      })()
-    }
+    // this.searchTable.connect(this.bodyWrapper)
+    // window.onresize = () => {
+    //   return (() => {
+    //     const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+    //     const scrollHeight = document.body.clientHeight - searchHeight - 125
+    //     this.searchTable.windowResize(scrollHeight)
+    //   })()
+    // }
+    const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
+    //     const scrollHeight = document.body.clientHeight - searchHeight - 125
+    const ctHeight = document.body.clientHeight - searchHeight - 60
+    document.querySelectorAll('.search-list')[0].setAttribute('style', `height:${ctHeight}px;overflow-y:auto`)
   }
 }
 </script>

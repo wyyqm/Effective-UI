@@ -34,7 +34,6 @@ export function makeSearchTableData(options) {
     },
     handleSizeChange: (val) => {
       ret.loading = true
-
       ret.currentPage = 1
       const params = {
         pageSize: val,
@@ -42,8 +41,14 @@ export function makeSearchTableData(options) {
         ...ret.formValues
       }
 
-      fetchFn(params, ret.setState(params))
-      // 翻页回到表格顶部
+      const saveParams = {
+        currentPage: ret.currentPage,
+        pageSize: ret.pageSize,
+        formValues: ret.formValues
+      }
+      console.log(params)
+
+      fetchFn(params, ret.setState(saveParams))
       Vue.nextTick(() => {
         ret.tableRef.bodyWrapper.scrollTop = 0
       })
@@ -57,7 +62,12 @@ export function makeSearchTableData(options) {
         ...ret.formValues
       }
 
-      fetchFn(params, ret.setState(params))
+      const saveParams = {
+        currentPage: ret.currentPage,
+        pageSize: ret.pageSize,
+        formValues: ret.formValues
+      }
+      fetchFn(params, ret.setState(saveParams))
       // 翻页回到表格顶部
       Vue.nextTick(() => {
         ret.tableRef.bodyWrapper.scrollTop = 0
@@ -65,7 +75,6 @@ export function makeSearchTableData(options) {
     },
     handleSearch: (formValues) => {
       ret.loading = true
-
       ret.formValues = cloneDeep(formValues)
       ret.currentPage = 1
       const params = {
@@ -73,17 +82,28 @@ export function makeSearchTableData(options) {
         pageSize: ret.pageSize,
         ...ret.formValues
       }
-
-      fetchFn(params, ret.setState(params))
-    },
-    init: () => {
-      ret.loading = true
-      const params = {
+      const saveParams = {
         currentPage: ret.currentPage,
         pageSize: ret.pageSize,
-        ...ret.formValues
+        formValues: ret.formValues
       }
-      fetchFn(params, ret.setState(params))
+      fetchFn(params, ret.setState(saveParams))
+    },
+    init: (formValues) => {
+      ret.loading = true
+      ret.formValues = cloneDeep(formValues)
+
+      const params = {
+        currentPage: ret.currentPage,
+        pageSize: ret.pageSize
+        // ...ret.formValues
+      }
+      const saveParams = {
+        currentPage: ret.currentPage,
+        pageSize: ret.pageSize,
+        formValues: ret.formValues
+      }
+      fetchFn(params, ret.setState(saveParams))
     }
   })
 

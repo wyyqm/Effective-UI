@@ -1,5 +1,5 @@
 <template>
-  <div class="pagination">
+  <div class="pagination clearfix">
     <slot></slot>
     <el-pagination
       @size-change="handleSizeChange"
@@ -47,21 +47,18 @@ export default {
 </script>
 <style lang="less">
 .pagination {
-  // position: fixed;
-  // bottom: 0;
+  position: sticky;
+  bottom: 0;
   // right: 0;
   padding: 5px 30px;
   box-sizing: border-box;
   background: #fff;
   border-top: 1px solid #f1f1f1;
-  // width: calc(100% - 220px);
   z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-direction: column;
+  text-align: left;
   .el-pagination {
     text-align: right;
+    float: right;
   }
 
   .el-pagination.is-background .btn-next,
@@ -69,6 +66,17 @@ export default {
   .el-pagination.is-background .el-pager li {
     background-color: #fff;
     border: 1px solid #dcdfe6;
+  }
+  .clearfix {
+    clear: both;
+    *zoom: 1;
+  }
+  .clearfix:after {
+    display: block;
+    clear: both;
+    content: '\0020';
+    visibility: hidden;
+    height: 0;
   }
 }
 </style>
