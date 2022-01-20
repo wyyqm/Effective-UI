@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <el-container class="container">
+    <el-container class="main-container">
       <el-header class="header">Header</el-header>
       <el-container>
         <el-aside width="200px" class="aside">
@@ -33,9 +33,11 @@
             </el-menu-item> -->
           </el-menu>
         </el-aside>
-        <el-main>
-          <router-view></router-view>
-        </el-main>
+        <el-container>
+          <el-main>
+            <router-view></router-view>
+          </el-main>
+        </el-container>
       </el-container>
     </el-container>
   </div>
@@ -54,26 +56,25 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 10px;
 }
 html,
 body,
-#app,
-.el-container {
+#app {
   padding: 0px;
   margin: 0px;
   height: 100%;
 }
-
+.main-container {
+  height: 100%;
+}
 .header {
   /* background-color: rgb(218, 241, 154); */
   width: 100%;
-  height: 64px;
   border-bottom: 1px solid #ccc;
 }
-.aside {
+/* .aside {
   height: 100%;
-  /* background-color: #e7d7e3; */
+  background-color: #e7d7e3;
   border-right: 1px solid #ccc;
-}
+} */
 </style>

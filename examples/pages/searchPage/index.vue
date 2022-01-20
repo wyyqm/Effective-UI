@@ -33,7 +33,7 @@
         </el-form-item>
       </template>
     </ef-search>
-    <ef-table-container @sortChange="sort" rowKey="id" @sizeChange="handleSizeChange">
+    <ef-table-container @sortChange="sort" rowKey="id" @sizeChange="handleSizeChange" height="full">
       <ef-table-checkbox v-model="selected" @input="selectObj" :disabledBy="disabledBy" />
       <el-table-column label="单行文本" prop="orderName"> </el-table-column>
       <el-table-column label="图片列" prop="orderId">

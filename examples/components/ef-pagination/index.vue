@@ -1,5 +1,5 @@
 <template>
-  <div class="pagination clearfix">
+  <div class="ef-pagination clearfix">
     <slot></slot>
     <el-pagination
       @size-change="handleSizeChange"
@@ -32,6 +32,7 @@ export default {
   data() {
     return {}
   },
+
   // 吐出size和page,change的方法，适用于分页状态改变影响到的业务逻辑
   methods: {
     handleSizeChange(val) {
@@ -46,21 +47,11 @@ export default {
 }
 </script>
 <style lang="less">
-.pagination {
-  position: sticky;
-  bottom: 0;
-  // right: 0;
+.ef-pagination {
   padding: 5px 30px;
   box-sizing: border-box;
   background: #fff;
-  border-top: 1px solid #f1f1f1;
   z-index: 100;
-  text-align: left;
-  .el-pagination {
-    text-align: right;
-    float: right;
-  }
-
   .el-pagination.is-background .btn-next,
   .el-pagination.is-background .btn-prev,
   .el-pagination.is-background .el-pager li {

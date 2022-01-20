@@ -16,21 +16,21 @@ export function makeSearchTableData(options) {
     connect: (ref) => {
       ret.tableRef = ref
     },
-    // 用来汇报窗口大小变化
-    windowResize: (height) => {
-      ret.scrollHeight = height
-    },
+    // windowResize: (height) => {
+    //   ret.scrollHeight = height
+    // },
     setState: (state) => {
       // Object.assign(ret, state)
       ret.currentPage = state.currentPage
       ret.pageSize = state.pageSize
       ret.formValues = state.formValues
     },
-    // 展开收起
+    // 展开收起, 用来汇报窗口大小变化
     expend() {
       // 展开收起的时候 表格高度要自适应可视区域
       const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
       ret.scrollHeight = document.body.clientHeight - searchHeight - 125
+      return ret.scrollHeight
     },
     handleSizeChange: (val) => {
       ret.loading = true

@@ -1,77 +1,95 @@
 <template>
-  <div class="table">
-    <el-table
-      ref="tableList"
-      :row-key="rowKey"
-      :data="searchTable.dataList"
-      tooltip-effect="dark"
-      @sort-change="sort"
-      v-loading="searchTable.loading"
-      :max-height="searchTable.scrollHeight"
-      stripe
-    >
-      <slot></slot>
-    </el-table>
-    <ef-pagination
-      @sizeChange="handleSizeChange"
-      @pageChange="handleCurrentChange"
-      :pagesizeOptions="pagesizeOptions"
-      :layout="layout"
-    ></ef-pagination>
-  </div>
+  <el-table
+    ref="innerTable"
+    :row-key="rowKey"
+    :data="searchTable.dataList"
+    tooltip-effect="dark"
+    @sort-change="sort"
+    v-loading="searchTable.loading"
+    :height="computedHeight"
+    stripe
+  >
+    <slot></slot>
+  </el-table>
 </template>
 <script>
-import EfPagination from '../../components/ef-pagination/index.vue'
-import searchValueMixin from '../../../src/mixins/searchValue-mixin.js'
+import debounce from 'lodash/debounce'
+import { observeDocumentMutation } from '../../utils/observer'
+
 export default {
   inject: ['searchTable'],
-  components: {
-    EfPagination
-  },
+  components: {},
   props: {
     rowKey: {
       type: String,
       value: 'id'
     },
-    pagesizeOptions: {
-      type: Array,
-      default: () => [10, 20, 50, 100]
-    },
-    layout: {
+    height: {
       type: String,
-      default: 'total, sizes, prev, pager, next, jumper'
+      default: 'full'
     }
   },
   data() {
     return {
-      selected: []
+      selected: [],
+      marginHeight: 0
     }
   },
+  // computed: {
+  //   bodyWrapper() {
+  //     return this.$refs.tableList
+  //   }
+  // },
   computed: {
-    bodyWrapper() {
-      return this.$refs.tableList
+    computedHeight() {
+      if (this.height === 'full') {
+        return this.marginHeight ? `calc(100% - ${this.marginHeight}px)` : '100%'
+      }
+      return this.height
     }
   },
   mounted() {
-    this.searchTable.connect(this.bodyWrapper)
-    window.onresize = () => {
-      return (() => {
-        const searchHeight = document.querySelectorAll('.search')[0].offsetHeight
-        const scrollHeight = document.body.clientHeight - searchHeight - 125
-        this.searchTable.windowResize(scrollHeight)
-      })()
+    this.updateHeight()
+    const callback = debounce(this.updateHeight(), 50)
+    const disconnect = observeDocumentMutation(callback)
+    this.$once('hook:beforeDestroy', disconnect)
+  },
+
+  watch: {
+    'searchTable.searchHeight'(value) {
+      this.updateHeight()
+      const callback = debounce(this.updateHeight(), 50)
+      const disconnect = observeDocumentMutation(callback)
+      this.$once('hook:beforeDestroy', disconnect)
     }
+    // 'searchList.loading'(value) {
+    //   while (this.loadingInstances.length > 0) {
+    //     const instance = this.loadingInstances.pop()
+    //     if (instance) {
+    //       instance.close()
+    //     }
+    //   }
+    //   if (value && this.$refs.innerTable?.$el) {
+    //     this.loadingInstances.push(
+    //       Loading.service({
+    //         target: this.$refs.innerTable.$el
+    //       })
+    //     )
+    //   }
+    // }
   },
   methods: {
+    updateHeight() {
+      this.$nextTick(() => {
+        const el = this.$refs.innerTable.$el
+        const style = window.getComputedStyle(el)
+        const scrollHeight = this.searchTable.expend()
+        this.marginHeight = parseInt(style.marginTop, 10) + parseInt(style.marginBottom, 10) + scrollHeight
+      })
+    },
     sort(val) {
       // console.log(val)
       this.$emit('sortChange', val)
-    },
-    handleSizeChange(val) {
-      this.$emit('sizeChange', val)
-    },
-    handleCurrentChange(val) {
-      this.$emit('pageChange', val)
     }
   }
 }

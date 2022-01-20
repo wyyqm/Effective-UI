@@ -23,61 +23,60 @@
     <section class="btn">
       <el-button type="primary"> hahhahah</el-button>
     </section>
-    <el-table stripe :data="searchTable.dataList" v-loading="searchTable.loading" rowKey="id">
-      <ef-table-checkbox v-model="selected" @input="selectObj" />
-      <el-table-column label="单行文本" prop="orderName"> </el-table-column>
-      <el-table-column label="图片列" prop="orderId">
-        <template slot-scope="scope">
-          <div v-if="scope.row.src">
-            <ty-image-preview :src="scope.row.src" style="width: 100px" />
-          </div>
-          <div v-else>--</div>
-        </template>
-      </el-table-column>
-      <el-table-column label="时间列" prop="date" sortable="custom">
-        <template slot-scope="scope">
-          <ty-time-span block :value="scope.row.date" />
-        </template>
-      </el-table-column>
-      <el-table-column label="状态列">
-        <template slot-scope="scope">
-          <span v-if="scope.row.status === 0">
-            <ty-span color="#f56c6c">未支付</ty-span>
-          </span>
-          <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
-      <el-table-column prop="switch" label="开关">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.switch"> </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column prop="handle" label="操作">
-        <template slot-scope="scope">
-          <el-button type="text">编辑</el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
-            <el-button slot="reference" type="text">删除</el-button>
-          </el-popconfirm>
-          <el-divider direction="vertical"></el-divider>
-          <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
-            <el-button slot="reference" type="text">审核</el-button>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
+    <main>
+      <!-- <el-table stripe :data="searchTable.dataList" v-loading="searchTable.loading" rowKey="id"> -->
+      <ef-table-container @sortChange="sort" rowKey="id">
+        <ef-table-checkbox v-model="selected" @input="selectObj" />
+        <el-table-column label="单行文本" prop="orderName"> </el-table-column>
+        <el-table-column label="图片列" prop="orderId">
+          <template slot-scope="scope">
+            <div v-if="scope.row.src">
+              <ty-image-preview :src="scope.row.src" style="width: 100px" />
+            </div>
+            <div v-else>--</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="时间列" prop="date" sortable="custom">
+          <template slot-scope="scope">
+            <ty-time-span block :value="scope.row.date" />
+          </template>
+        </el-table-column>
+        <el-table-column label="状态列">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">
+              <ty-span color="#f56c6c">未支付</ty-span>
+            </span>
+            <span v-else><ty-span color="#67c23a">已支付</ty-span></span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" label="多行文本" show-overflow-tooltip> </el-table-column>
+        <el-table-column prop="switch" label="开关">
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.switch"> </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="handle" label="操作">
+          <template slot-scope="scope">
+            <el-button type="text">编辑</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
+              <el-button slot="reference" type="text">删除</el-button>
+            </el-popconfirm>
+            <el-divider direction="vertical"></el-divider>
+            <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
+              <el-button slot="reference" type="text">审核</el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </ef-table-container>
+      <!-- </el-table> -->
+    </main>
 
-    <!-- <template slot="action">
-      <el-button></el-button>
-    </template> -->
-
-    <ef-pagination>
-      <div class="footerBtn">
-        <el-button type="primary">下载</el-button>
-        <el-button type="primary" plain> 导出</el-button>
-      </div>
-    </ef-pagination>
+    <footer>
+      <el-button type="primary">下载</el-button>
+      <el-button type="primary" plain> 导出</el-button>
+      <ef-pagination> </ef-pagination>
+    </footer>
   </ef-search-list-container>
 </template>
 
@@ -92,6 +91,7 @@ import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfInput from '../../components/ef-selectInput/index'
+import EfTableContainer from '../el-table-container/index'
 
 const data = {
   'list|1000': [
@@ -140,7 +140,8 @@ export default {
     EfTableCheckbox,
     TySpan,
     TyImagePreview,
-    TyTimeSpan
+    TyTimeSpan,
+    EfTableContainer
   },
   provide() {
     return {
@@ -200,8 +201,5 @@ export default {
 .btn {
   text-align: left;
   margin-bottom: 10px;
-}
-.footerBtn {
-  display: inline-block;
 }
 </style>
