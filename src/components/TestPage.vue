@@ -11,7 +11,7 @@
         </el-form-item>
       </ef-search>
       <el-button>
-        hello
+        新增
       </el-button>
     </section>
 
@@ -19,19 +19,34 @@
       <ef-table ref="table" @row-click="log" height="full">
         <el-table-column label="ID" prop="id" />
         <el-table-column label="name" prop="name" />
+        <el-table-column label="操作">
+          <el-button-group>
+            <el-button type="text" icon="el-icon-edit">
+              编辑
+            </el-button>
+            <el-button type="text" icon="el-icon-video-pause">
+              停用
+            </el-button>
+            <el-button type="text" icon="el-icon-delete" >
+              删除
+            </el-button>
+          </el-button-group>
+        </el-table-column>
       </ef-table>
     </main>
 
     <footer>
-      <el-button>
-        测试
-      </el-button>
-      <el-button>
-        测试
-      </el-button>
-      <el-button>
-        测试
-      </el-button>
+      <el-button-group>
+        <el-button icon="el-icon-delete">
+          批量删除
+        </el-button>
+        <el-button>
+          测试
+        </el-button>
+        <el-button>
+          测试
+        </el-button>
+      </el-button-group>
       <ef-pagination
           @current-change="log"
           layout="total, sizes, prev, pager, next, jumper"
@@ -112,3 +127,29 @@ export default {
   }
 }
 </script>
+
+<style>
+
+.el-button-group .el-button.el-button--text:not(:last-child) {
+  margin-right: 1em;
+}
+
+.el-button-group .el-button--text:not(:last-child):after {
+  display: inline;
+  white-space: pre;
+  content: ' ';
+  color: transparent;
+
+  /* absolute 可以保证按钮的文本结尾，如果有空白，那个空白不占空间 */
+  position: absolute;
+  margin-right: 0.4em;
+  margin-left: 0.4em;
+
+  /* 模拟一条竖线 */
+  background: linear-gradient(90deg,
+    rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%,
+    rgba(220,223,230,1) 35%, rgba(220,223,230,1) 65%,
+    rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%
+  );
+}
+</style>
