@@ -206,7 +206,6 @@ export default {
       this.toggleSelection()
       // 翻页回到表格顶部
       this.$nextTick(() => {
-        console.log(this.$refs.multipleTable)
         this.$refs.multipleTable.bodyWrapper.scrollTop = 0
       })
     },

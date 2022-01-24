@@ -97,6 +97,7 @@ export default {
   }
   .el-form {
     text-align: left;
+    padding-right: 10px;
   }
   .el-input {
     width: 180px;

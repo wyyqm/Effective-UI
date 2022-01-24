@@ -16,17 +16,14 @@ export function makeSearchTableData(options) {
     connect: (ref) => {
       ret.tableRef = ref
     },
-    // 用来汇报窗口大小变化
-    // windowResize: (height) => {
-    //   ret.searchHeight = height
-    // },
+
     setState: (currentPage, pageSize, formValues) => {
       // Object.assign(ret, state)
       ret.currentPage = currentPage
       ret.pageSize = pageSize
       ret.formValues = formValues
     },
-    // 展开收起
+    // 展开收起，用来汇报窗口大小变化
     expend() {
       // 展开收起的时候 表格高度要自适应可视区域
       const searchHeight = document.querySelectorAll('.ef-search')[0].offsetHeight
@@ -58,10 +55,10 @@ export function makeSearchTableData(options) {
 
       const params = {
         currentPage: val,
-        pageSize: ret.pageSize,
-        ...ret.formValues
+        pageSize: ret.pageSize
+        // ...ret.formValues
       }
-      console.log(params)
+      // console.log(params)
 
       fetchFn(params, ret.setState(ret.currentPage, ret.pageSize, ret.formValues))
       // 翻页回到表格顶部

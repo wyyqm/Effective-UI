@@ -7,6 +7,7 @@
     @sort-change="sort"
     v-loading="searchTable.loading"
     :height="computedHeight"
+    class="ef-table"
     stripe
   >
     <slot></slot>
@@ -35,30 +36,29 @@ export default {
       marginHeight: 0
     }
   },
-  // computed: {
-  //   bodyWrapper() {
-  //     return this.$refs.tableList
-  //   }
-  // },
   computed: {
     computedHeight() {
       if (this.height === 'full') {
         return this.marginHeight ? `calc(100% - ${this.marginHeight}px)` : '100%'
       }
       return this.height
+    },
+    bodyWrapper() {
+      return this.$refs.innerTable
     }
   },
   mounted() {
+    this.searchTable.connect(this.bodyWrapper)
     this.updateHeight()
-    const callback = debounce(this.updateHeight(), 50)
+    const callback = debounce(this.updateHeight, 50)
     const disconnect = observeDocumentMutation(callback)
     this.$once('hook:beforeDestroy', disconnect)
   },
 
   watch: {
-    'searchTable.searchHeight'(value) {
+    'searchTable.searchHeight'() {
       this.updateHeight()
-      const callback = debounce(this.updateHeight(), 50)
+      const callback = debounce(this.updateHeight, 50)
       const disconnect = observeDocumentMutation(callback)
       this.$once('hook:beforeDestroy', disconnect)
     }
@@ -94,4 +94,4 @@ export default {
   }
 }
 </script>
-<style lang="less"></style>
+<style lang="less" scoped></style>

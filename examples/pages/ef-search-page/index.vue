@@ -19,12 +19,10 @@
           <ef-input v-model="searchForm.searchVal" :options="options"></ef-input>
         </el-form-item>
       </ef-search>
+      <el-button type="primary"> 新建</el-button>
     </section>
-    <section class="btn">
-      <el-button type="primary"> hahhahah</el-button>
-    </section>
+
     <main>
-      <!-- <el-table stripe :data="searchTable.dataList" v-loading="searchTable.loading" rowKey="id"> -->
       <ef-table-container @sortChange="sort" rowKey="id">
         <ef-table-checkbox v-model="selected" @input="selectObj" />
         <el-table-column label="单行文本" prop="orderName"> </el-table-column>
@@ -56,20 +54,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="handle" label="操作">
-          <template slot-scope="scope">
-            <el-button type="text">编辑</el-button>
-            <el-divider direction="vertical"></el-divider>
-            <el-popconfirm title="确认删除这条订单吗？" @onConfirm="delCur(scope.row)">
-              <el-button slot="reference" type="text">删除</el-button>
-            </el-popconfirm>
-            <el-divider direction="vertical"></el-divider>
-            <el-popconfirm title="确认审核通过吗？" @onConfirm="delCur(scope.row)">
-              <el-button slot="reference" type="text">审核</el-button>
-            </el-popconfirm>
-          </template>
+          <el-button-group>
+            <ty-confirm content="确定删除吗?" type="text" btn-text="删除" @confirm="confirm(row)" @cancel="cancel" />
+            <el-button type="text" icon="el-icon-edit"> 编辑 </el-button>
+            <el-button type="text" icon="el-icon-video-pause"> 停用 </el-button>
+          </el-button-group>
         </el-table-column>
       </ef-table-container>
-      <!-- </el-table> -->
     </main>
 
     <footer>
@@ -92,7 +83,8 @@ import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfInput from '../../components/ef-selectInput/index'
 import EfTableContainer from '../el-table-container/index'
-
+import TyConfirm from '@tuya-fe/ty-confirm'
+import '@tuya-fe/ty-confirm/dist/TyConfirm.css'
 const data = {
   'list|1000': [
     {
@@ -141,7 +133,8 @@ export default {
     TySpan,
     TyImagePreview,
     TyTimeSpan,
-    EfTableContainer
+    EfTableContainer,
+    TyConfirm
   },
   provide() {
     return {
@@ -193,7 +186,10 @@ export default {
       return value.id > 34000000
     },
     sort() {},
-    selectObj() {}
+    selectObj() {},
+    delCur(value) {
+      console.log(value)
+    }
   }
 }
 </script>
@@ -201,5 +197,31 @@ export default {
 .btn {
   text-align: left;
   margin-bottom: 10px;
+}
+.el-button-group .el-button.el-button--text:not(:last-child) {
+  margin-right: 1em !important;
+}
+
+.el-button-group .el-button--text:not(:last-child):after {
+  display: inline;
+  white-space: pre;
+  content: ' ';
+  color: transparent;
+
+  /* absolute 可以保证按钮的文本结尾，如果有空白，那个空白不占空间 */
+  position: absolute;
+  margin-right: 0.4em !important;
+  margin-left: 0.4em !important;
+
+  /* 模拟一条竖线 */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 35%,
+    rgba(220, 223, 230, 1) 35%,
+    rgba(220, 223, 230, 1) 65%,
+    rgba(0, 0, 0, 0) 65%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
 }
 </style>

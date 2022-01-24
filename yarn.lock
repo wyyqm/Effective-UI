@@ -2219,6 +2219,11 @@
     "@tuya-fe/full-ui" "^3.0.1"
     vue "^2.5.11"
 
+"@tuya-fe/ty-confirm@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry-npm.tuya-inc.top/@tuya-fe/ty-confirm/download/@tuya-fe/ty-confirm-1.0.6.tgz#76294322d0b9d6e5ab54fa062ec78dabbc51064e"
+  integrity sha1-dilDItC51uWrVPoGLseNq7xRBk4=
+
 "@tuya-fe/ty-image-preview@^1.0.3":
   version "1.0.3"
   resolved "https://registry-npm.tuya-inc.top/@tuya-fe/ty-image-preview/download/@tuya-fe/ty-image-preview-1.0.3.tgz#4905aa03910557dbabd062dfa665c39bd2d94bd9"
