@@ -54,11 +54,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="handle" label="操作">
-          <el-button-group>
-            <ty-confirm content="确定删除吗?" type="text" btn-text="删除" @confirm="confirm(row)" @cancel="cancel" />
-            <el-button type="text" icon="el-icon-edit"> 编辑 </el-button>
-            <el-button type="text" icon="el-icon-video-pause"> 停用 </el-button>
-          </el-button-group>
+          <ty-confirm content="确定删除吗?" type="text" btn-text="删除" @confirm="confirm(row)" @cancel="cancel" />
+          <el-divider direction="vertical"></el-divider>
+          <el-button type="text" icon="el-icon-edit"> 编辑 </el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button type="text" icon="el-icon-video-pause"> 停用 </el-button>
         </el-table-column>
       </ef-table-container>
     </main>
@@ -75,14 +75,14 @@
 import { makeSearchTableData } from '../../utils/common-search-methods'
 import EfPagination from '../../components/ef-pagination'
 import EfSearch from '../../components/ef-search'
-import EfSearchListContainer from '../el-search-list-container'
+import EfSearchListContainer from '../ef-search-list-container'
 import Mock from 'mockjs'
 import EfDatePicker from '../../components/ef-datePicker/index'
 import TyImagePreview from '@tuya-fe/ty-image-preview'
 import { TySpan, TyTimeSpan } from '@tuya-fe/ty-span'
 import EfTableCheckbox from '../../components/ef-table-checkbox/index.vue'
 import EfInput from '../../components/ef-selectInput/index'
-import EfTableContainer from '../el-table-container/index'
+import EfTableContainer from '../ef-table-container/index'
 import TyConfirm from '@tuya-fe/ty-confirm'
 import '@tuya-fe/ty-confirm/dist/TyConfirm.css'
 const data = {
@@ -187,41 +187,10 @@ export default {
     },
     sort() {},
     selectObj() {},
-    delCur(value) {
-      console.log(value)
-    }
+    cancel() {},
+    confirm() {},
+    delCur(value) {}
   }
 }
 </script>
-<style scoped>
-.btn {
-  text-align: left;
-  margin-bottom: 10px;
-}
-.el-button-group .el-button.el-button--text:not(:last-child) {
-  margin-right: 1em !important;
-}
-
-.el-button-group .el-button--text:not(:last-child):after {
-  display: inline;
-  white-space: pre;
-  content: ' ';
-  color: transparent;
-
-  /* absolute 可以保证按钮的文本结尾，如果有空白，那个空白不占空间 */
-  position: absolute;
-  margin-right: 0.4em !important;
-  margin-left: 0.4em !important;
-
-  /* 模拟一条竖线 */
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0) 35%,
-    rgba(220, 223, 230, 1) 35%,
-    rgba(220, 223, 230, 1) 65%,
-    rgba(0, 0, 0, 0) 65%,
-    rgba(0, 0, 0, 0) 100%
-  ) !important;
-}
-</style>
+<style scoped></style>

@@ -7,7 +7,7 @@
       range-separator="至"
       start-placeholder="开始时间"
       end-placeholder="结束时间"
-      :class="dateType === 'daterange' ? 'long' : 'normal'"
+      :class="getStyles()"
       @input="timeChange"
       :picker-options="pickerOptions"
       :placeholder="'请选择'"
@@ -56,7 +56,7 @@ export default {
     },
 
     /**
-     * 必选：日期类型。可能是年月日或者周期等，具体参数（可参考elementUI）有：year/month/date/dates/ week/datetime/datetimerange/ daterange/monthrange。但是本组件只针对常用的类型如：year/month/daterange做了格式化处理，其他类型timeFormat请传false，自行转换。
+     * 必选：日期类型。可能是年月日或者周期等，具体参数（可参考elementUI）有：year/month/date/dates/ week/datetimerange/datetime/ daterange/monthrange。但是本组件只针对常用的类型如：year/month/daterange/datetimerange做了格式化处理，其他类型timeFormat请传false，自行转换。
      */
     dateType: {
       type: String,
@@ -92,12 +92,33 @@ export default {
             formatedTime[1] = moment(parseInt(this.value[1]))
           }
           return formatedTime
+        case 'datetimerange':
+          if (this.value.length > 0) {
+            formatedTime[0] = moment(parseInt(this.value[0]))
+            formatedTime[1] = moment(parseInt(this.value[1]))
+          }
+          if (this.startTime && this.endTime) {
+            formatedTime[0] = moment(parseInt(this.startTime))
+            formatedTime[1] = moment(parseInt(this.endTime))
+          }
+
+          return formatedTime
         default:
           return this.value
       }
     }
   },
   methods: {
+    // 样式处理
+    getStyles() {
+      if (this.dateType === 'datetimerange') {
+        return 'long'
+      } else if (this.dateType === 'month' || this.dateType === 'year' || this.dateType === 'week') {
+        return 'small'
+      } else {
+        return 'normal'
+      }
+    },
     // 格式化成时间戳 返给父组件
     formatTime(times) {
       const formatedTime = []
@@ -120,6 +141,12 @@ export default {
             formatedTime[1] = times[1].getTime()
           }
           return formatedTime
+        case 'datetimerange':
+          if (times) {
+            formatedTime[0] = times[0].getTime()
+            formatedTime[1] = times[1].getTime()
+          }
+          return formatedTime
         default:
           return this.value
       }
@@ -134,9 +161,12 @@ export default {
 </script>
 <style lang="less" scoped>
 .long {
-  width: 250px !important;
+  width: 400px !important;
 }
 .normal {
+  width: 250px !important;
+}
+.small {
   width: 180px !important;
 }
 </style>

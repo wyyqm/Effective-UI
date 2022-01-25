@@ -7,7 +7,6 @@
     @sort-change="sort"
     v-loading="searchTable.loading"
     :height="computedHeight"
-    class="ef-table"
     stripe
   >
     <slot></slot>
@@ -32,7 +31,6 @@ export default {
   },
   data() {
     return {
-      selected: [],
       marginHeight: 0
     }
   },
@@ -62,25 +60,11 @@ export default {
       const disconnect = observeDocumentMutation(callback)
       this.$once('hook:beforeDestroy', disconnect)
     }
-    // 'searchList.loading'(value) {
-    //   while (this.loadingInstances.length > 0) {
-    //     const instance = this.loadingInstances.pop()
-    //     if (instance) {
-    //       instance.close()
-    //     }
-    //   }
-    //   if (value && this.$refs.innerTable?.$el) {
-    //     this.loadingInstances.push(
-    //       Loading.service({
-    //         target: this.$refs.innerTable.$el
-    //       })
-    //     )
-    //   }
-    // }
   },
   methods: {
     updateHeight() {
       this.$nextTick(() => {
+        this.$refs.innerTable.doLayout()
         const el = this.$refs.innerTable.$el
         const style = window.getComputedStyle(el)
         const scrollHeight = this.searchTable.expend()

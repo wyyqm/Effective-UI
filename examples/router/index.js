@@ -1,11 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Input from '../components/input/index'
-import Search from '../components/ef-search/index'
-import Item from '../components/ef-formItem/index'
-import searchRow from '../pages/searchRow/index'
+
 import Table from '../components/ef-table/index'
-import SearchPage from '../pages/searchPage/index'
 import SearchList from '../pages/ef-search-page/index'
 Vue.use(VueRouter)
 
@@ -15,11 +12,7 @@ const routes = [
     name: 'input',
     component: Input
   },
-  {
-    path: '/ss',
-    name: 'searchPage',
-    component: SearchPage
-  },
+
   {
     path: '/searchlist',
     name: 'searchlist',
@@ -29,16 +22,6 @@ const routes = [
     path: '/table',
     name: 'table',
     component: Table
-  },
-  {
-    path: '/item',
-    name: 'item',
-    component: Item
-  },
-  {
-    path: '/search',
-    name: 'searchRow',
-    component: searchRow
   }
 ]
 

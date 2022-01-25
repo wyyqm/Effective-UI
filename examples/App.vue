@@ -20,7 +20,7 @@
                 <span>搜索页面</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="1-1"> <router-link :to="{ path: '/search' }">search Page</router-link></el-menu-item>
+                <el-menu-item index="1-1"> <router-link :to="{ path: '/searchlist' }">search Page</router-link></el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- <el-menu-item index="2">

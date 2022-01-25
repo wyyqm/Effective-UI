@@ -10,10 +10,12 @@
       @reset.native.prevent="reset"
     >
       <div>
+        <!-- @slot 匿名slot，自定义传入form-item作为查询条件  -->
         <slot></slot>
       </div>
       <div class="ef-searchBtn">
         <el-button type="text" v-if="hasMore" @click.native="toggleExpend"> {{ !expend ? '展开' : '收起' }} </el-button>
+        <!-- @slot 具名slot，name=searchBtn 默认包含搜索、重置按钮，可通过slot传入自定义按钮  -->
         <slot name="searchBtn">
           <el-button type="primary" native-type="submit" icon="el-icon-search"> 查询 </el-button>
           <el-button type="primary" native-type="reset" plain icon="el-icon-refresh-right"> 重置 </el-button>
@@ -26,6 +28,9 @@
 export default {
   components: {},
   props: {
+    /**
+     * 表单数据对象
+     */
     model: {
       type: Object,
       default: () => {},
@@ -46,8 +51,7 @@ export default {
     this.setHeight()
     window.onresize = () => {
       // 每次窗口变化都重置search高度
-      console.log(document.querySelectorAll('.ef-searchForm')[0])
-      document.querySelectorAll('.ef-searchForm')[0] && document.querySelectorAll('.searchForm')[0].setAttribute('style', 'height:auto')
+      document.querySelectorAll('.searchForm')[0].setAttribute('style', 'height:auto')
       return (() => {
         this.setHeight()
       })()
@@ -58,14 +62,16 @@ export default {
   },
   methods: {
     handleSearch() {
+      /**
+       * 点击查询事件的回调
+       */
       this.$emit('search', this.model)
     },
     setHeight() {
       this.searchHeight = document.querySelectorAll('.ef-search')[0].clientHeight
       if (this.searchHeight > 50) {
         this.hasMore = true
-        document.querySelectorAll('.ef-searchForm')[0] &&
-          document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', 'height:50px;overflow:hidden')
+        document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', 'height:50px;overflow:hidden')
       } else {
         this.hasMore = false
       }
@@ -78,10 +84,12 @@ export default {
       } else {
         document.querySelectorAll('.ef-searchForm')[0].setAttribute('style', 'height:50px;overflow:hidden')
       }
+      /**
+       * 点击展开收起事件的回调
+       */
       this.$emit('expend', this.expend)
     },
     reset() {
-      // console.log(this.$refs.searchForm)
       this.$refs.searchForm.resetFields()
       this.$emit('search', this.model)
     }
