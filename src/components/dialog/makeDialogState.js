@@ -1,12 +1,11 @@
 import Vue from 'vue'
 
-export default function makeDialogState(initialState = {}) {
+export default function makeDialogState() {
   let dialog = null
 
   let doneResolve = null
   const state = Vue.observable({
     data: {},
-    ...initialState,
     isMount: false,
     innerVisible: false,
   })

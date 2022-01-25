@@ -41,9 +41,7 @@ export default {
       this.currentData = await this.editDialogState.open({...this.currentData})
     },
     async editByService() {
-      this.currentData = await EditDialogService.openDialog({
-        data: { ...this.currentData }
-      })
+      this.currentData = await EditDialogService.open({ ...this.currentData })
     },
     async cancel() {
       console.log('cancel')

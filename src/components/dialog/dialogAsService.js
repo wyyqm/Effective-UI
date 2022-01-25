@@ -6,8 +6,10 @@ export default function dialogAsService(Component) {
   let instance
 
   const handle = {
-    summonDialog(initialState, props) {
-      const state = makeDialogState(initialState)
+    summon(data, props) {
+      const state = makeDialogState()
+      const promise = state.summon(data)
+
       instance = new DialogConstructor({
         propsData: {
           state,
@@ -18,14 +20,14 @@ export default function dialogAsService(Component) {
       instance.$mount()
       document.body.appendChild(instance.$el)
 
-      return state.summon(state.data).then((ret) => {
+      return promise.then((ret) => {
         instance.$destroy()
         instance.$el.parentNode.removeChild(instance.$el)
         return ret
       })
     },
-    openDialog(initialState, props) {
-      return handle.summonDialog(initialState, props).then((res) => {
+    open(data, props) {
+      return handle.summon(data, props).then((res) => {
         if (res.type === 'confirm') {
           return res.data
         } else {
