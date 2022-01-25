@@ -1,0 +1,90 @@
+.ef-span {
+  &#{&}-- {
+    &lighter {
+      font-weight: lighter;
+    }
+
+    &bold {
+      font-weight: bold;
+    }
+
+    &italic {
+      font-style: italic
+    }
+
+    &underline {
+      text-decoration: underline;
+    }
+
+    &del {
+      text-decoration: line-through;
+    }
+
+    &clickable {
+      cursor: pointer;
+    }
+
+    &ellipsis {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    &inlineBlock {
+      display: inline-block;
+    }
+
+    &block {
+      display: block;
+    }
+
+    &type- {
+      &primary {
+        color: #409EFF;
+      }
+
+      &success {
+        color: #67C23A;
+      }
+
+      &danger {
+        color: #F56C6C;
+      }
+
+      &warning {
+        color: #E6A23C;
+      }
+
+      &info {
+        color: #909399;
+      }
+    }
+
+    &size- {
+      &xs {
+        font-size: 12px;
+      }
+
+      &s {
+        font-size: 13px;
+      }
+
+      &base {
+        font-size: 14px;
+      }
+
+      &m {
+        font-size: 16px;
+      }
+
+      &l {
+        font-size: 18px;
+      }
+
+      &xl {
+        font-size: 20px;
+      }
+    }
+  }
+}

@@ -13,8 +13,8 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.15.6",
     "lodash": "^4.17.21",
-    "vue": "^2.6.11",
-    "vue-hoc": "^0.4.7"
+    "moment": "^2.29.1",
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
@@ -30,6 +30,8 @@
     "babel-loader": "^8.2.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "sass": "^1.49.0",
+    "sass-loader": "^10",
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.11"
   },

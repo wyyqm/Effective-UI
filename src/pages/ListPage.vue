@@ -19,6 +19,9 @@
       <ef-table ref="table" @row-click="log" height="full">
         <el-table-column label="ID" prop="id" />
         <el-table-column label="name" prop="name" />
+        <el-table-column label="状态" v-slot="{ row }">
+          <ef-switch-span :match="statusMatch" :value="row.status" />
+        </el-table-column>
         <el-table-column label="操作">
           <el-button-group>
             <el-button type="text" icon="el-icon-edit">
@@ -56,18 +59,22 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import EfSearchListContainer from '@/components/searchList/container'
 import EfPagination from '@/components/pagination/index.vue'
 import EfTable from '@/components/table/index.vue'
-import { makeSearchList } from '@/components/searchList/utils'
 import EfSearch from '@/components/search'
+import EfSpan from '@/components/span'
+import makeSearchListState from '@/components/searchList/makeSearchListState'
 
+Vue.use(EfSpan)
 const list = []
 
 for (let i = 0; i < 1000; i++) {
   list.push({
     id: i,
-    name: 'item ' + i
+    name: 'item ' + i,
+    status: Math.ceil(Math.random() * 3)
   })
 }
 
@@ -86,23 +93,25 @@ async function getData({ page, pageSize, name }) {
 }
 
 export default {
-  name: 'TestPage',
+  name: 'ListPage',
   components: {
     EfSearch,
     EfSearchListContainer,
     EfTable,
     EfPagination,
   },
-  props: {
-    msg: String
-  },
   data() {
     const searchForm = {
       name: ''
     }
     return {
+      statusMatch: [
+        [1, '执行中', { type: 'info', }],
+        [2, '通过', { type: 'success', }],
+        [3, '失败', { type: 'warning', }],
+      ],
       searchForm,
-      searchList: makeSearchList({
+      searchList: makeSearchListState({
         fetchFn: this.fetchFn,
         initialSearchParams: searchForm
       })

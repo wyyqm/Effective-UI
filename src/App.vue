@@ -6,7 +6,8 @@
         <el-aside width="200px">Aside</el-aside>
         <el-container>
           <el-main>
-            <TestPage />
+<!--            <TestPage />-->
+            <EditPage />
           </el-main>
 <!--          <el-footer>Footer</el-footer>-->
         </el-container>
@@ -16,11 +17,13 @@
 </template>
 
 <script>
-import TestPage from './components/TestPage.vue'
+import TestPage from '@/pages/ListPage.vue'
+import EditPage from '@/pages/EditPage'
 
 export default {
   name: 'App',
   components: {
+    EditPage,
     TestPage
   }
 }
