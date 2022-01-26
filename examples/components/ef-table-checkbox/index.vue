@@ -11,14 +11,22 @@
 <script>
 export default {
   props: {
+    /**
+     * 表格中表头列的名称
+     */
     label: {
       type: String
     },
+    /**
+     * 绑定的选中状态
+     */
     value: {
       type: Array,
       required: true
     },
-
+    /**
+     * 不可选的CheckBox
+     */
     disabledBy: {
       type: Function,
       default: () => false
@@ -72,13 +80,6 @@ export default {
       return map
     },
     allSelected() {
-      // for (const row of this.owner.data) {
-      //   if (!this.selected[this.getKey(row)]) {
-      //     val = false
-      //   }  else {
-      //     val = true
-      //   }
-      // }
       let selectedAll = false
       let count = 0
       if (this.value.length > 0) {
