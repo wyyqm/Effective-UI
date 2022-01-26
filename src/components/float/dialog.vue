@@ -31,6 +31,9 @@ export default {
     },
   },
   created() {
+    if (!this.state.isMount) {
+      throw new Error('检测到 isMount === false，是否忘记在弹窗组件上设置 v-if="dialogState.isMount"')
+    }
     this.$once('hook:beforeDestroy', this.state.registerFloat(this))
     this.closedReslove = null
   },
