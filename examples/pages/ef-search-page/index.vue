@@ -54,11 +54,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="handle" label="操作">
-          <ty-confirm content="确定删除吗?" type="text" btn-text="删除" @confirm="confirm(row)" @cancel="cancel" />
-          <el-divider direction="vertical"></el-divider>
-          <el-button type="text" icon="el-icon-edit"> 编辑 </el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-button type="text" icon="el-icon-video-pause"> 停用 </el-button>
+          <el-button-group>
+            <ty-confirm content="确定删除吗?" type="text" btn-text="删除" @confirm="confirm(row)" @cancel="cancel" />
+            <el-button type="text" icon="el-icon-video-pause"> 停用 </el-button>
+            <el-button type="text" icon="el-icon-edit"> 编辑 </el-button>
+          </el-button-group>
         </el-table-column>
       </ef-table-container>
     </main>
