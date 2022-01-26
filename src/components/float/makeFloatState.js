@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
-export default function makeDialogState() {
-  let dialog = null
+export default function makeFloatState() {
+  let float = null
 
   let doneResolve = null
   const state = Vue.observable({
@@ -40,7 +40,7 @@ export default function makeDialogState() {
   state.done = async (type, data) => {
     state.innerVisible = false
 
-    dialog && await dialog.closedPromise()
+    float && await float.closedPromise()
     state.data = {}
     state.isMount = false
 
@@ -56,14 +56,18 @@ export default function makeDialogState() {
     return state.done('confirm', data)
   }
 
-  state.registerDialog = (instance) => {
-    if (dialog) {
-      throw new Error('DialogState 不能同时控制多个弹窗')
+  state.registerFloat = (instance) => {
+    if (float) {
+      throw new Error('FloatState 不能同时控制多个弹窗')
     }
-    dialog = instance
+    float = instance
     return () => {
-      dialog = null
+      float = null
     }
+  }
+
+  state.syncFn = async (value) => {
+    return state.open(value)
   }
 
   return state

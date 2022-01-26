@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import makeDialogState from '@/components/dialog/makeDialogState'
+import makeDialogState from '@/components/float/makeFloatState'
 
-export default function dialogAsService(Component) {
+export default function floatAsService(Component) {
   let DialogConstructor = Vue.extend(Component)
   let instance
 

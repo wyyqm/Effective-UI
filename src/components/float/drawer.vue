@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <el-drawer
     v-bind="passedProps"
     @update:visible="updateVisible"
     @open="$emit('open', $event)"
@@ -12,26 +12,22 @@
     </template>
 
     <slot />
-
-    <template slot="footer">
-      <slot name="footer" />
-    </template>
-  </el-dialog>
+  </el-drawer>
 </template>
 
 <script>
-import { Dialog as BaseDialog } from 'element-ui'
+import { Drawer as BaseDrawer } from 'element-ui'
 
 export default {
-  name: 'ef-dialog',
+  name: 'ef-drawer',
   props: {
-    ...BaseDialog.props,
+    ...BaseDrawer.props,
     state: {
       type: Object
     },
   },
   created() {
-    this.$once('hook:beforeDestroy', this.state.registerDialog(this))
+    this.$once('hook:beforeDestroy', this.state.registerFloat(this))
     this.closedReslove = null
   },
   computed: {

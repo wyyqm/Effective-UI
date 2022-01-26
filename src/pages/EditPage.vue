@@ -10,28 +10,41 @@
     <div>
       age: {{ currentData.age }}
     </div>
-    <el-button @click="edit">编辑 - 使用组件</el-button>
+    <el-button @click="edit">编辑 - 使用组件 state</el-button>
     <el-button @click="editByService">编辑 - 使用 Service</el-button>
+
+    <ul>
+      <li v-for="(item, index) in dataList" :key="item.id">
+        {{ item }}
+        <ef-sync v-model="dataList[index]" :fn="editDialogState.open">
+          <el-button type="text">编辑</el-button>
+        </ef-sync>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
 
-import makeDialogState from '@/components/dialog/makeDialogState'
-import EfDialog from '@/components/dialog'
 import EditDialog from '@/pages/dialogs/EditDialog'
-import dialogAsService from '@/components/dialog/dialogAsService'
+import { dialogAsService, makeDialogState } from '@/components/float'
+import EfSync from '@/components/sync'
 
 const EditDialogService = dialogAsService(EditDialog)
 
 export default {
   name: 'EditPage',
   components: {
+    EfSync,
     EditDialog,
-    EfDialog,
   },
   data() {
     return {
+      dataList: [
+        { id: 1, name: 'Alexa', age: '10'},
+        { id: 2, name: 'John', age: '21'},
+        { id: 3, name: 'Bob', age: '13'},
+      ],
       currentData: {},
       editDialogState: makeDialogState()
     }

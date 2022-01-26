@@ -6,8 +6,8 @@
         <el-aside width="200px">Aside</el-aside>
         <el-container>
           <el-main>
-<!--            <TestPage />-->
-            <EditPage />
+            <list-page />
+<!--            <EditPage />-->
           </el-main>
 <!--          <el-footer>Footer</el-footer>-->
         </el-container>
@@ -17,14 +17,14 @@
 </template>
 
 <script>
-import TestPage from '@/pages/ListPage.vue'
+import ListPage from '@/pages/ListPage'
 import EditPage from '@/pages/EditPage'
 
 export default {
   name: 'App',
   components: {
     EditPage,
-    TestPage
+    ListPage
   }
 }
 </script>

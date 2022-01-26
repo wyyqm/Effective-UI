@@ -7,9 +7,6 @@
       <el-form-item label="name" prop="name" :rules="[{ required: true, message: '名称必填'}]">
         <el-input v-model="model.name" />
       </el-form-item>
-      <el-form-item label="age" prop="age">
-        <el-input v-model="model.age" />
-      </el-form-item>
     </el-form>
     <div slot="footer" style="text-align: center">
       <el-button @click="state.cancel()" size="small">取消</el-button>
@@ -19,7 +16,7 @@
 </template>
 
 <script>
-import EfDialog from '@/components/dialog'
+import { EfDialog } from '@/components/float'
 
 export default {
   name: 'EditDialog',

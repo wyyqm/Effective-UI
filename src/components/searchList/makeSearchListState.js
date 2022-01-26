@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep'
 import Vue from 'vue'
 
-export default function makeSearchListState(options) {
+export default function makeSearchListState(options = {}) {
   const {
     data = [],
     fetchFn,
