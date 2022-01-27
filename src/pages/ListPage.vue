@@ -13,6 +13,16 @@
       <el-button @click="create">
         新增
       </el-button>
+
+      <ef-confirm title="test" dialog>
+        <div slot="content">
+          <el-input v-model="searchForm.name" />
+        </div>
+
+        <el-button>
+          test
+        </el-button>
+      </ef-confirm>
     </section>
 
     <main>
@@ -35,9 +45,14 @@
             <el-button type="text" icon="el-icon-video-pause">
               停用
             </el-button>
-            <el-button type="text" icon="el-icon-delete" >
-              删除
-            </el-button>
+            <ef-confirm type="text">
+              <div slot="content">
+                确定要删除{{ row.name }}？
+              </div>
+              <el-button type="text" icon="el-icon-delete" >
+                删除
+              </el-button>
+            </ef-confirm>
           </el-button-group>
         </el-table-column>
       </ef-table>
@@ -56,7 +71,7 @@
         </el-button>
       </el-button-group>
       <ef-pagination
-          layout="total, sizes, prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next, jumper"
       />
     </footer>
     <edit-dialog
@@ -78,6 +93,7 @@ import EditDialog from '@/pages/dialogs/EditDialog'
 import EfSync from '@/components/sync'
 import { drawerAsService, makeDialogState } from '@/components/float'
 import ViewDrawer from '@/pages/dialogs/ViewDrawer'
+import EfConfirm from '@/components/confirm'
 
 Vue.use(EfSpan)
 const list = []
@@ -109,6 +125,7 @@ async function getData({ page, pageSize, name }) {
 export default {
   name: 'ListPage',
   components: {
+    EfConfirm,
     EfSync,
     EfSearch,
     EfSearchListContainer,

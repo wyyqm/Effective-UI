@@ -1,403 +1,136 @@
-<template>
-  <div
-    class="ef-confirm"
-    @click="onElClick"
-    :class="{ 'is-disabled': disabled }"
-  >
-    <slot v-if="dialog">
-      <trigger-btn
-        v-bind="$props"
-        :loading="loadingOnBtn && applyLoading"
-      >
-        {{ applyBtnText }}
-      </trigger-btn>
-    </slot>
-
-    <el-dialog
-      top="0"
-      v-if="dialog"
-      :title="applyTitle"
-      width="25%"
-      append-to-body
-      :visible.sync="visible"
-      :show-close="!hideCancel"
-      custom-class="ef-confirm--dialog"
-      destroy-on-close
-      :before-close="beforeDialogClose"
-      :modal="!disableModal"
-    >
-      <template slot="default">
-        <content-box
-          :content="contentText"
-          :hide-cancel="hideCancel"
-          :loading="!loadingOnBtn && applyLoading"
-          :cancel-text="applyCancelText"
-          :confirm-text="applyConfirmText"
-          @cancel="fire('Cancel', false)"
-          @confirm="onConfirm"
-        >
-          <slot name="content" />
-        </content-box>
-      </template>
-    </el-dialog>
-
-    <el-popover
-      v-else
-      ref="popover"
-      placement="bottom"
-      v-model="visible"
-      :disabled="disabled"
-      trigger="manual"
-      :title="applyTitle"
-      transition="el-zoom-in-bottom"
-    >
-      <template slot="default">
-        <content-box
-            :content="contentText"
-            :hide-cancel="hideCancel"
-            mini
-            :loading="!loadingOnBtn && applyLoading"
-            :cancel-text="applyCancelText"
-            :confirm-text="applyConfirmText"
-            @cancel="fire('Cancel', false)"
-            @confirm="onConfirm"
-        >
-          <slot name="content" />
-        </content-box>
-      </template>
-      <template slot="reference">
-        <slot>
-          <trigger-btn
-              v-bind="$props"
-              :loading="loadingOnBtn && applyLoading"
-          >
-            {{ applyBtnText }}
-          </trigger-btn>
-        </slot>
-      </template>
-    </el-popover>
-  </div>
-</template>
-
 <script>
-
 import { Button } from 'element-ui'
+import { dialogAsService } from '@/components/float'
+import EfConfirmDialog from './dialog'
+import Vue from 'vue'
 
-const makeGetter = prop => function() {
-  return typeof this[prop] === 'function'
-      ? this[prop](this.data)
-      : this[prop];
-};
+import Popover from './popover'
+import { getTextFromTextVNode } from '@/utils/vnode'
+import addListener from '@/utils/addListener'
+import { innerProps } from '@/components/confirm/utils'
 
-const TriggerBtn = {
-  functional: true,
-  props: Button.props,
-  render: (h, { props, children }) =>
-    h(Button, {
-      props,
-      class: 'ef-confirm__btn'
-    }, children)
-};
+const dialogService = dialogAsService(EfConfirmDialog)
 
-const ContentBox = {
-  functional: true,
-  props: {
-    content: {
-      type: String,
-      required: true
-    },
-    hideCancel: {
-      type: Boolean
-    },
-    loading: {
-      type: Boolean
-    },
-    cancelText: {
-      type: String,
-      required: true
-    },
-    confirmText: {
-      type: String,
-      required: true
-    },
-    mini: {
-      type: Boolean
-    }
-  },
-  render: (h, { props, children, listeners }) => {
-    const content = children.length
-        ? children
-        : [h('p', {}, props.content)];
+const innerPropKeys = Object.keys(innerProps)
 
-    const cancel = props.hideCancel
-        ? null
-        : h(Button, {
-          props: {
-            size: props.mini ? 'mini' : 'small',
-            disabled: props.loading
-          },
-          on: { click: listeners.cancel }
-        }, props.cancelText);
-
-    const confirm = h(Button, {
-      props: {
-        type: 'primary',
-        size: props.mini ? 'mini' : 'small',
-        loading: props.loading
-      },
-      on: { click: listeners.confirm }
-    }, props.confirmText);
-
-    return h('div', [
-      ...content,
-      h('div', { class: 'ef-confirm__operates'}, [
-        cancel,
-        index
-      ])
-    ]);
-  }
-};
+let PopoverConstructor = Vue.extend(Popover)
 
 export default {
   name: 'ef-confirm',
-  components: {
-    TriggerBtn,
-    ContentBox
-  },
   props: {
-    // data 可以传任何值
-    data: {
-      default: null,
-      validator: () => true
+    ...Button.props,
+    ...innerProps,
+    title: {
+      type: String
     },
     dialog: {
       type: Boolean
-    },
-    title: {
-      type: [String, Function],
-      default: undefined
-    },
-    content: {
-      type: [String, Function],
-      default: '确定要执行这项操作吗？'
-    },
-    hideCancel: {
-      type: Boolean
-    },
-    beforeConfirm: {
-      type: Function,
-      default: () => {
-      }
-    },
-    beforeCancel: {
-      type: Function,
-      default: () => {
-      }
-    },
-    confirmText: {
-      type: [String, Function],
-      default: '确定'
-    },
-    cancelText: {
-      type: [String, Function],
-      default: '取消'
-    },
-    afterConfirm: {
-      type: Function,
-      default: null
-    },
-    afterCancel: {
-      type: Function,
-      default: null
-    },
-    disableModal: {
-      type: Boolean
-    },
-    btnText: {
-      type: [String, Function],
-      default: '执行'
-    },
-    uncontrolledLoading: {
-      type: Boolean
-    },
-    loadingOnBtn: {
-      type: Boolean
-    },
-    ...TriggerBtn.props
+    }
   },
   data() {
     return {
-      visible: false,
-      listened: false,
-      innerLoading: false
-    };
+      instance: null,
+    }
   },
   computed: {
-    contentText: makeGetter('content'),
-    applyBtnText: makeGetter('btnText'),
-    applyConfirmText: makeGetter('confirmText'),
-    applyCancelText: makeGetter('cancelText'),
-    applyTitle: makeGetter('title'),
-    applyLoading() {
-      if (this.uncontrolledLoading) {
-        return this.innerLoading;
-      } else {
-        return this.loading;
-      }
-    }
+    buttonProps() {
+      const { dialog, title, ...rest } = this.$props
+      return rest
+    },
   },
   methods: {
-    async onConfirm() {
-      this.$emit('update:loading', true);
-      // 这里过一会再设置 loading 状态，立即设置会导致 下面的 fire 提取返回
-      this.$nextTick(() => this.innerLoading = true);
-      await this.fire('Confirm');
-      if (this.loadingOnBtn && this.afterConfirm) {
-        await this.afterConfirm(this.data);
+    getInnerProps() {
+      const props = {
+        content: this.$slots.content,
+        reference: this.$refs.reference._isVue ? this.$refs.reference.$el : this.$refs.reference
       }
-      this.$emit('update:loading', false);
-      this.innerLoading = false;
-    },
-    async fire(type, payload) {
-      if (!this.loadingOnBtn && this.applyLoading) {
-        return false;
-      }
-      // 触发两个钩子，任何钩子返回 false 都将阻止关闭
-      let allowClose = true;
-      if (this['before' + type]) {
-        allowClose = await this['before' + type](this.data, payload);
-      }
-      if (allowClose === false) {
-        return false;
-      }
-      this.$emit(type.toLowerCase(), this.data, payload);
 
-      if (this['after' + type]) {
-        if (this.loadingOnBtn) {
-          // after 钩子不再控制是否关闭弹窗
-          allowClose = true;
-        } else {
-          allowClose = await this['after' + type](this.data, payload);
+      for (const key of innerPropKeys) {
+        props[key] = this.$props[key]
+      }
+
+      return props
+    },
+    updateInnerProps() {
+      const props = this.getInnerProps()
+      if (this.instance) {
+        for (const key in props) {
+          this.$set(this.instance, key, props[key])
         }
       }
-      if (allowClose === false) {
-        return false;
-      }
-
-      this.visible = false;
-      return true;
     },
-    clickOutsideHandler(e) {
+    openDialog() {
+      const promise = dialogService.summon({}, this.getInnerProps())
+      this.instance = dialogService.current
+      promise.then(({type}) => {
+        this.$emit(type)
+        this.instance = null
+      })
+    },
+    openPopover() {
+      const instance = new PopoverConstructor({
+        propsData: this.getInnerProps(),
+        mounted() {
+          this.$nextTick(() => {
+            instance.innerVisible = true
+          })
+        }
+      })
+
+      const promise = instance.closedPromise()
+
+      promise.then(({ type }) => {
+        instance.$destroy()
+        this.$emit(type)
+        this.instance = null
+      })
+
+      instance.$mount()
+
+      this.instance = instance
+    },
+    open() {
       if (this.dialog) {
-        return;
+        this.openDialog()
+      } else {
+        this.openPopover()
       }
-      if (!this.visible) {
-        return;
-      }
-      if (this.$el.contains(e.target)) {
-        return;
-      }
-      const popper = this.$refs.popover.$refs.popper;
-      const clickInPopper = popper && popper.contains(e.target);
+    },
+    renderVnode(vnodes) {
+      const child = vnodes[0]
 
-      if (!clickInPopper) {
-        this.fire('Cancel', true);
+      if (!child.data) {
+        child.data = {};
       }
-    },
-    async beforeDialogClose(done) {
-      await this.fire('Cancel', true) && done();
-    },
-    onElClick() {
-      if (!this.disabled && !this.loading) {
-        this.visible = true;
+
+      if (!child.data.on) {
+        child.data.on = {}
       }
-    },
-    listen() {
-      if (!this.dialog && !this.listened) {
-        document.addEventListener('click', this.clickOutsideHandler);
-        this.listened = true;
-      }
-    },
-    removeListener() {
-      if (this.listened) {
-        document.removeEventListener('click', this.clickOutsideHandler);
-        this.listened = false;
-      }
+
+      child.context = this._self
+      child.data.ref = 'reference'
+
+      addListener(child.data.on, 'click', this.open)
+      return [child]
     }
   },
-  watch: {
-    disabled(val) {
-      if (val) {
-        this.visible = false;
+  beforeUpdate() {
+    this.updateInnerProps()
+  },
+  render(h) {
+    let text = '执行'
+
+    if (this.$slots.default) {
+      const maybeText = getTextFromTextVNode(this.$slots.default)
+      if (maybeText === false) {
+        return this.renderVnode(this.$slots.default)
+      } else {
+        text = maybeText
       }
-    },
-    dialog(val) {
-      val ? this.removeListener() : this.listen();
     }
+
+    return h(Button, { on: { click: this.open }, props: this.buttonProps, ref: 'reference' }, text)
   },
-  mounted() {
-    this.listen();
-  },
-  beforeDestroy() {
-    this.removeListener();
-  }
-};
+}
 </script>
 
-<style lang="scss">
-.ef-confirm {
-  display: inline-block;
-
-  &__operates {
-    text-align: right;
-    margin-top: 15px;
-  }
-}
-
-.el-button-group > .ef-confirm {
-  &:not(:last-child) .ef-confirm__btn {
-    margin-right: -1px;
-  }
-
-  &:first-child .ef-confirm__btn {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  & {
-    float: left;
-    position: relative;
-  }
-
-  & + .ef-confirm {
-    margin-left: 0;
-  }
-
-  &:not(:first-child):not(:last-child) .ef-confirm__btn {
-    border-radius: 0;
-  }
-
-  &:last-child .ef-confirm__btn {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  &.is-disabled,
-  &:active,
-  &:focus,
-  &:hover {
-    z-index: 1;
-  }
-}
-.ef-confirm--dialog {
-  top: 40%;
-  transform: translateY(-50%);
-  & .el-dialog__header {
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-  & .el-dialog__body {
-    padding: 0 15px 15px 15px;
-  }
-}
-</style>
