@@ -1,10 +1,10 @@
 import EfSearchPage from './index.vue'
 export default {
-  title: '列表页/ef-search-page ',
+  title: '列表页/ef-search-page',
   component: EfSearchPage,
   parameters: {
     componentSource: {
-      url: './ef-search-page.vue',
+      url: './EfSearchPage.vue',
       language: 'vue'
     }
   }

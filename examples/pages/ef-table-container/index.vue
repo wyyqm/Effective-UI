@@ -25,7 +25,7 @@ export default {
       value: 'id'
     },
     height: {
-      type: String,
+      type: [String, Number],
       default: 'full'
     }
   },

@@ -49,14 +49,14 @@ export default {
       default: 100
     },
     /**
-     * 可选： 分页条数 --> default:[10, 20, 50, 100]
+     * 可选： 分页条数
      */
     pagesizeOptions: {
       type: Array,
       default: () => [10, 20, 50, 100]
     },
     /**
-     * 可选： 分页功能 --> default: 'total, sizes, prev, pager, next, jumper'
+     * 可选： 分页功能
      */
     layout: {
       type: String,

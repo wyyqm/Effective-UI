@@ -46,7 +46,6 @@ export default {
     this.setHeight()
     window.onresize = () => {
       // 每次窗口变化都重置search高度
-      console.log(document.querySelectorAll('.ef-searchForm')[0])
       document.querySelectorAll('.ef-searchForm')[0] && document.querySelectorAll('.searchForm')[0].setAttribute('style', 'height:auto')
       return (() => {
         this.setHeight()
