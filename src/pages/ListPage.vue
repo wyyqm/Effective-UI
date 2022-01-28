@@ -42,10 +42,13 @@
                 编辑
               </el-button>
             </ef-sync>
-            <el-button type="text" icon="el-icon-video-pause">
+            <ef-confirm type="text" :when-confirm="action" auto-loading icon="el-icon-video-pause">
+              <div slot="content">
+                确定要停用{{ row.name }}？
+              </div>
               停用
-            </el-button>
-            <ef-confirm type="text">
+            </ef-confirm>
+            <ef-confirm type="text" :when-confirm="action" auto-loading dialog>
               <div slot="content">
                 确定要删除{{ row.name }}？
               </div>
@@ -176,6 +179,13 @@ export default {
     },
     view(data) {
       ViewDrawerService.open(data)
+    },
+    action() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true)
+        }, 10000)
+      })
     }
   }
 }

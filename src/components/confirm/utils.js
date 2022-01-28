@@ -1,4 +1,8 @@
 export const innerProps = {
+  autoLoading: {
+    type: Boolean,
+    default: false,
+  },
   title: {
     type: String
   },
@@ -20,7 +24,7 @@ export const innerProps = {
     type: String,
     default: '确定',
   },
-  beforeConfirm: {
+  whenConfirm: {
     type: Function,
     default: () => () => true
   },

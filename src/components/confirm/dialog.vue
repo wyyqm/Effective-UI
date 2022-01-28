@@ -12,10 +12,11 @@ export default {
       type: Object
     },
     content: {},
+    reference: {},
   },
   methods: {
     async onConfirm() {
-      let result = this.beforeConfirm()
+      let result = this.whenConfirm()
       if (typeof result?.then === 'function') {
         try {
           this.$emit('update:loading', true)
@@ -29,14 +30,22 @@ export default {
       }
     },
     onCancel() {
-      this.state.cancel()
+      if (!this.loading) {
+        this.state.cancel()
+      }
+    },
+    beforeClose(done) {
+      if (!this.loading) {
+        done()
+      }
     }
   },
-  render(h) {
+  render() {
     const { cancelText, confirmText, hideCancel, loading } = this.$props
 
     return (
         <EfDialog
+          beforeClose={this.beforeClose}
           state={this.state}
           title={this.title}
           width={this.width}

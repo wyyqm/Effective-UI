@@ -24,18 +24,46 @@ export default {
           ...rest,
           transition: 'el-zoom-in-bottom',
           placement: 'bottom',
+          trigger: 'manual',
           value: this.innerVisible,
         },
         on: { input: this.onInput, 'after-leave': this.afterLeave }
       }
     }
   },
+  mounted() {
+    document.addEventListener('click', this.clickOutsideHandler);
+    this.$on('hook:beforeDestroy', () => {
+      document.removeEventListener('click', this.clickOutsideHandler)
+    })
+  },
   methods: {
+    clickOutsideHandler(e) {
+      if (!this.innerVisible) {
+        return;
+      }
+
+      if (this.loading) {
+        return
+      }
+
+      if (this.reference.contains(e.target)) {
+        return;
+      }
+      const popper = this.$refs.popover.$refs.popper;
+      const clickInPopper = popper && popper.contains(e.target);
+
+      if (!clickInPopper) {
+        this.onCancel()
+      }
+    },
     async onInput(value) {
-      this.innerVisible = value
+      if (!this.loading) {
+        this.innerVisible = value
+      }
     },
     async onConfirm() {
-      let result = this.beforeConfirm()
+      let result = this.whenConfirm()
       if (typeof result?.then === 'function') {
         try {
           this.$emit('update:loading', true)
@@ -91,7 +119,7 @@ export default {
 
     if (this.content) {
       return (
-        <Popover {...this.passedPopoverData}>
+        <Popover {...this.passedPopoverData} ref="popover">
           <p class="ef-confirm-popover__content">{this.content}</p>
           <div class="ef-confirm-popover__operates">
             {cancel}
@@ -101,7 +129,7 @@ export default {
       )
     } else {
       return (
-        <Popover {...this.passedPopoverData}>
+        <Popover {...this.passedPopoverData} ref="popover">
           <div class="ef-confirm-popover__operates-only">
             {cancel}
             {confirm}

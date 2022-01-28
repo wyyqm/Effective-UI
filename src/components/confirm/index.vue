@@ -12,6 +12,7 @@ import { innerProps } from '@/components/confirm/utils'
 const dialogService = dialogAsService(EfConfirmDialog)
 
 const innerPropKeys = Object.keys(innerProps)
+const buttonPropKeys = Object.keys(Button.props)
 
 let PopoverConstructor = Vue.extend(Popover)
 
@@ -30,12 +31,19 @@ export default {
   data() {
     return {
       instance: null,
+      confirmLoading: false,
     }
   },
   computed: {
-    buttonProps() {
-      const { dialog, title, ...rest } = this.$props
-      return rest
+    buttonData() {
+      const props = {}
+      for (const key of buttonPropKeys) {
+        props[key] = this.$props[key]
+      }
+      return {
+        props,
+        on: { click: this.open }
+      }
     },
   },
   methods: {
@@ -48,6 +56,8 @@ export default {
       for (const key of innerPropKeys) {
         props[key] = this.$props[key]
       }
+
+      props.loading = this.autoLoading ? this.confirmLoading : this.loading
 
       return props
     },
@@ -62,6 +72,13 @@ export default {
     openDialog() {
       const promise = dialogService.summon({}, this.getInnerProps())
       this.instance = dialogService.current
+
+      if (this.autoLoading) {
+        this.instance.$on('update:loading', (loading) => {
+          this.confirmLoading = loading
+        })
+      }
+
       promise.then(({type}) => {
         this.$emit(type)
         this.instance = null
@@ -79,17 +96,26 @@ export default {
 
       const promise = instance.closedPromise()
 
+      if (this.autoLoading) {
+        instance.$on('update:loading', (loading) => {
+          this.confirmLoading = loading
+        })
+      }
+
+      this.instance = instance
       promise.then(({ type }) => {
         instance.$destroy()
         this.$emit(type)
         this.instance = null
+        this.confirmLoading = false
       })
 
       instance.$mount()
-
-      this.instance = instance
     },
     open() {
+      if (this.instance) {
+        return
+      }
       if (this.dialog) {
         this.openDialog()
       } else {
@@ -119,6 +145,8 @@ export default {
   },
   render() {
     let text = '执行'
+    // 必须在这里取一下这些 data，才能在这些 data 改变时触发 beforeUpdate
+    const { confirmLoading } = this
 
     if (this.$slots.default) {
       const maybeText = getTextFromTextVNode(this.$slots.default)
@@ -130,7 +158,7 @@ export default {
     }
 
     return (
-      <Button onClick={this.open} {...this.buttonProps} ref="reference">
+      <Button {...this.buttonData} ref="reference">
         {text}
       </Button>
     )
