@@ -117,7 +117,7 @@ export default {
   beforeUpdate() {
     this.updateInnerProps()
   },
-  render(h) {
+  render() {
     let text = '执行'
 
     if (this.$slots.default) {
@@ -129,7 +129,11 @@ export default {
       }
     }
 
-    return h(Button, { on: { click: this.open }, props: this.buttonProps, ref: 'reference' }, text)
+    return (
+      <Button onClick={this.open} {...this.buttonProps} ref="reference">
+        {text}
+      </Button>
+    )
   },
 }
 </script>

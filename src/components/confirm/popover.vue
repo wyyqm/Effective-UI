@@ -21,9 +21,9 @@ export default {
       const { content, ...rest } = this.$props
       return {
         props: {
+          ...rest,
           transition: 'el-zoom-in-bottom',
           placement: 'bottom',
-          ...rest,
           value: this.innerVisible,
         },
         on: { input: this.onInput, 'after-leave': this.afterLeave }
@@ -67,41 +67,47 @@ export default {
     }
   },
   render(h) {
-    const props = this.$props
-    const cancel = props.hideCancel
-        ? null
-        : h(Button, {
-          props: {
-            size: 'small',
-            disabled: props.loading
-          },
-          on: { click: this.onCancel }
-        }, props.cancelText)
+    const { confirmText, hideCancel, loading, cancelText } = this.$props
+    const cancel = !hideCancel && (
+      <Button
+          onClick={this.onCancel}
+          size="small"
+          disabled={loading}
+      >
+        {cancelText}
+      </Button>
+    )
 
-    const confirm = h(Button, {
-      props: {
-        type: 'primary',
-        size: 'small',
-        loading: props.loading
-      },
-      on: { click: this.onConfirm }
-    }, props.confirmText)
+    const confirm = (
+      <Button
+        onClick={this.onConfirm}
+        size="small"
+        type="primary"
+        loading={loading}
+      >
+        {confirmText}
+      </Button>
+    )
 
     if (this.content) {
-      return h(Popover, this.passedPopoverData, [
-        h('p', { class: 'ef-confirm-popover__content' }, this.content),
-        h('div', { class: 'ef-confirm-popover__operates' }, [
-          cancel,
-          confirm,
-        ])
-      ])
+      return (
+        <Popover {...this.passedPopoverData}>
+          <p class="ef-confirm-popover__content">{this.content}</p>
+          <div class="ef-confirm-popover__operates">
+            {cancel}
+            {confirm}
+          </div>
+        </Popover>
+      )
     } else {
-      return h(Popover, this.passedPopoverData, [
-        h('div', { class: 'ef-confirm-popover__operates-only' }, [
-          cancel,
-          confirm,
-        ])
-      ])
+      return (
+        <Popover {...this.passedPopoverData}>
+          <div class="ef-confirm-popover__operates-only">
+            {cancel}
+            {confirm}
+          </div>
+        </Popover>
+      )
     }
   }
 }
