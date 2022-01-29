@@ -14,7 +14,7 @@
         新增
       </el-button>
 
-      <ef-confirm title="test" dialog>
+      <ef-confirm title="test">
         <div slot="content">
           <el-input v-model="searchForm.name" />
         </div>
@@ -31,6 +31,7 @@
         <el-table-column label="name" prop="name" />
         <el-table-column label="状态" v-slot="{ row }">
           <ef-switch-span :match="statusMatch" :value="row.status" />
+          <button @click="editStatueInline(row, $event)">编辑</button>
         </el-table-column>
         <el-table-column label="操作" v-slot="{ row, $index }">
           <el-button-group>
@@ -81,6 +82,10 @@
       v-if="editDialogState.isMount"
       :state="editDialogState"
     />
+    <inner-edit
+      v-if="inlineEditState.isMount"
+      :state="inlineEditState"
+    />
   </ef-search-list-container>
 </template>
 
@@ -97,6 +102,7 @@ import EfSync from '@/components/sync'
 import { drawerAsService, makeDialogState } from '@/components/float'
 import ViewDrawer from '@/pages/dialogs/ViewDrawer'
 import EfConfirm from '@/components/confirm'
+import InnerEdit from '@/pages/dialogs/InlineEdit'
 
 Vue.use(EfSpan)
 const list = []
@@ -128,6 +134,7 @@ async function getData({ page, pageSize, name }) {
 export default {
   name: 'ListPage',
   components: {
+    InnerEdit,
     EfConfirm,
     EfSync,
     EfSearch,
@@ -142,6 +149,7 @@ export default {
     }
     return {
       editDialogState: makeDialogState(),
+      inlineEditState: makeDialogState(),
       statusMatch: [
         [1, '执行中', { type: 'info', }],
         [2, '通过', { type: 'success', }],
@@ -155,6 +163,10 @@ export default {
     }
   },
   methods: {
+    async editStatueInline(row, event) {
+      const result = await this.inlineEditState.open(row.status, event.target)
+      row.status = result
+    },
     async fetchFn({ currentPage, pageSize }, { name }) {
       const { data, total } = await getData({
         page: currentPage,

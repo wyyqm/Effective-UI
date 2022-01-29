@@ -8,16 +8,23 @@ export default function makeFloatState() {
     data: {},
     isMount: false,
     innerVisible: false,
+    reference: null,
   })
 
-  state.summon = (data) => {
+  state.summon = async (data, reference = null) => {
+    // 单例模式，先关掉之前的再打开
+    if (state.isMount) {
+      await state.cancel()
+    }
+
     state.data = data || {}
 
-    const promise = new Promise((resolve) => {
+    let promise = new Promise((resolve) => {
       doneResolve = resolve
     })
 
     state.isMount = true
+    state.reference = reference
 
     Vue.nextTick(() => {
       state.innerVisible = true
@@ -26,8 +33,8 @@ export default function makeFloatState() {
     return promise
   }
 
-  state.open = (data) => {
-    return state.summon(data).then((res) => {
+  state.open = (data, reference = null) => {
+    return state.summon(data, reference).then((res) => {
       if (res.type === 'confirm') {
         return res.data
       } else {
@@ -43,6 +50,7 @@ export default function makeFloatState() {
     float && await float.closedPromise()
     state.data = {}
     state.isMount = false
+    state.reference = null
 
     doneResolve({ type, data, state })
     doneResolve = null
@@ -64,10 +72,6 @@ export default function makeFloatState() {
     return () => {
       float = null
     }
-  }
-
-  state.syncFn = async (value) => {
-    return state.open(value)
   }
 
   return state

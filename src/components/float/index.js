@@ -9,7 +9,9 @@ export {
   floatAsService,
   floatAsService as dialogAsService,
   floatAsService as drawerAsService,
+  floatAsService as popoverAsService,
   makeFloatState,
   makeFloatState as makeDialogState,
   makeFloatState as makeDrawerState,
+  makeFloatState as makePopoverState,
 }
