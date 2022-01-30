@@ -6,9 +6,9 @@ export default function floatAsService(Component) {
   let instance
 
   const handle = {
-    summon(data, props) {
+    summon(data, props, reference = null) {
       const state = makeDialogState()
-      const promise = state.summon(data)
+      const promise = state.summon(data, reference)
 
       instance = new DialogConstructor({
         propsData: {
@@ -26,8 +26,8 @@ export default function floatAsService(Component) {
         return ret
       })
     },
-    open(data, props) {
-      return handle.summon(data, props).then((res) => {
+    open(data, props, reference = null) {
+      return handle.summon(data, props, reference).then((res) => {
         if (res.type === 'confirm') {
           return res.data
         } else {

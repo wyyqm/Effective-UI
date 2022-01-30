@@ -1,142 +1,58 @@
 <script>
-import { Button, Popover } from 'element-ui'
+import EfPopover from '@/components/float/popover'
 import { innerProps } from './utils'
+import Operators from './operators'
 
 export default {
   name: 'ef-confirm-popover',
   props: {
-    ...Popover.props,
     ...innerProps,
+    state: {
+      type: Object
+    },
     content: {},
-  },
-  data() {
-    return {
-      innerVisible: false,
-      confirmed: false,
-      closedResolve: null,
-    }
-  },
-  computed: {
-    passedPopoverData() {
-      const { content, ...rest } = this.$props
-      return {
-        props: {
-          ...rest,
-          transition: 'el-zoom-in-bottom',
-          placement: 'bottom',
-          trigger: 'manual',
-          value: this.innerVisible,
-        },
-        on: { input: this.onInput, 'after-leave': this.afterLeave }
-      }
-    }
-  },
-  mounted() {
-    document.addEventListener('click', this.clickOutsideHandler);
-    this.$on('hook:beforeDestroy', () => {
-      document.removeEventListener('click', this.clickOutsideHandler)
-    })
+    reference: {},
   },
   methods: {
-    clickOutsideHandler(e) {
-      if (!this.innerVisible) {
-        return;
-      }
-
-      if (this.loading) {
-        return
-      }
-
-      if (this.reference.contains(e.target)) {
-        return;
-      }
-      const popper = this.$refs.popover.$refs.popper;
-      const clickInPopper = popper && popper.contains(e.target);
-
-      if (!clickInPopper) {
-        this.onCancel()
-      }
-    },
-    async onInput(value) {
+    beforeClose(done) {
       if (!this.loading) {
-        this.innerVisible = value
+        done()
       }
     },
-    async onConfirm() {
-      let result = this.whenConfirm()
-      if (typeof result?.then === 'function') {
-        try {
-          this.$emit('update:loading', true)
-          result = await result
-        } finally {
-          this.$emit('update:loading', false)
-        }
-      }
-      if (result) {
-        this.confirmed = true
-        this.innerVisible = false
-      }
-    },
-    onCancel() {
-      this.innerVisible = false
-    },
-    afterLeave() {
-      if (this.closedResolve) {
-        this.closedResolve({
-          type: this.confirmed ? 'confirm' : 'cancel'
-        })
-        this.closedResolve = null
-      }
-    },
-    closedPromise() {
-      return new Promise((resolve) => {
-        this.closedResolve = resolve
-      })
+    updateLoading(value) {
+      this.$emit('update:loading', value)
     }
   },
-  render(h) {
-    const { confirmText, hideCancel, loading, cancelText } = this.$props
-    const cancel = !hideCancel && (
-      <Button
-          onClick={this.onCancel}
-          size="small"
-          disabled={loading}
-      >
-        {cancelText}
-      </Button>
-    )
+  render() {
+    const { cancelText, confirmText, hideCancel, loading, whenConfirm } = this.$props
 
-    const confirm = (
-      <Button
-        onClick={this.onConfirm}
-        size="small"
-        type="primary"
-        loading={loading}
+    return (
+      <EfPopover
+        beforeClose={this.beforeClose}
+        state={this.state}
+        transition="el-zoom-in-bottom"
+        class="ef-confirm-popover"
       >
-        {confirmText}
-      </Button>
+        {
+          this.content ? (
+            <p className="ef-confirm-popover__content">
+              {this.content}
+            </p>
+          ) : null
+        }
+        <Operators
+          class={this.content ? 'ef-confirm-popover__operates' : 'ef-confirm-popover__operates-center'}
+          confirmText={confirmText}
+          cancelText={cancelText}
+          hideCancel={hideCancel}
+          loading={loading}
+          whenConfirm={whenConfirm}
+          vOn:confirm={this.state.confirm}
+          vOn:cancel={this.state.cancel}
+          vOn:update-loading={this.updateLoading}
+        />
+      </EfPopover>
     )
-
-    if (this.content) {
-      return (
-        <Popover {...this.passedPopoverData} ref="popover">
-          <p class="ef-confirm-popover__content">{this.content}</p>
-          <div class="ef-confirm-popover__operates">
-            {cancel}
-            {confirm}
-          </div>
-        </Popover>
-      )
-    } else {
-      return (
-        <Popover {...this.passedPopoverData} ref="popover">
-          <div class="ef-confirm-popover__operates-only">
-            {cancel}
-            {confirm}
-          </div>
-        </Popover>
-      )
-    }
   }
 }
 </script>
@@ -145,12 +61,15 @@ export default {
 .ef-confirm-popover {
 }
 
-.ef-confirm-popover__operates {
-  text-align: right;
-  margin-top: 15px;
+.ef-confirm-popover__content {
+  margin: 16px 0;
 }
 
-.ef-confirm-popover__operates-only {
+.ef-confirm-popover__operates {
+  text-align: right;
+}
+
+.ef-confirm-popover__operates-center {
   text-align: center;
 }
 </style>

@@ -1,7 +1,7 @@
 <script>
 import EfDialog from '@/components/float/dialog'
-import { Button } from 'element-ui'
 import { innerProps } from './utils'
+import Operators from './operators'
 
 export default {
   name: 'ef-confirm-dialog',
@@ -15,65 +15,39 @@ export default {
     reference: {},
   },
   methods: {
-    async onConfirm() {
-      let result = this.whenConfirm()
-      if (typeof result?.then === 'function') {
-        try {
-          this.$emit('update:loading', true)
-          result = await result
-        } finally {
-          this.$emit('update:loading', false)
-        }
-      }
-      if (result) {
-        this.state.confirm()
-      }
-    },
-    onCancel() {
-      if (!this.loading) {
-        this.state.cancel()
-      }
-    },
     beforeClose(done) {
       if (!this.loading) {
         done()
       }
+    },
+    updateLoading(value) {
+      this.$emit('update:loading', value)
     }
   },
   render() {
-    const { cancelText, confirmText, hideCancel, loading } = this.$props
+    const { cancelText, confirmText, hideCancel, loading, whenConfirm } = this.$props
 
     return (
-        <EfDialog
-          beforeClose={this.beforeClose}
-          state={this.state}
-          title={this.title}
-          width={this.width}
-          class="ef-confirm-dialog"
-        >
-          <p class="ef-confirm-dialog__content">{this.content}</p>
-          <div class="ef-confirm-dialog__operates">
-            {
-              !hideCancel && (
-                <Button
-                  onClick={this.onCancel}
-                  size="small"
-                  disabled={loading}
-                >
-                  {cancelText}
-                </Button>
-              )
-            }
-            <Button
-              onClick={this.onConfirm}
-              size="small"
-              type="primary"
-              loading={loading}
-            >
-              {confirmText}
-            </Button>
-          </div>
-        </EfDialog>
+      <EfDialog
+        beforeClose={this.beforeClose}
+        state={this.state}
+        title={this.title}
+        width={this.width}
+        class="ef-confirm-dialog"
+      >
+        <p class="ef-confirm-dialog__content">{this.content}</p>
+        <Operators
+          class="ef-confirm-dialog__operates"
+          confirmText={confirmText}
+          cancelText={cancelText}
+          hideCancel={hideCancel}
+          loading={loading}
+          whenConfirm={whenConfirm}
+          vOn:confirm={this.state.confirm}
+          vOn:cancel={this.state.cancel}
+          vOn:update-loading={this.updateLoading}
+        />
+      </EfDialog>
     )
   }
 }
@@ -94,6 +68,4 @@ export default {
     padding: 0 15px 15px 15px;
   }
 }
-
-
 </style>

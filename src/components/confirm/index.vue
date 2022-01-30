@@ -1,6 +1,6 @@
 <script>
 import { Button } from 'element-ui'
-import { dialogAsService } from '@/components/float'
+import { dialogAsService, popoverAsService } from '@/components/float'
 import EfConfirmDialog from './dialog'
 import Vue from 'vue'
 
@@ -85,32 +85,21 @@ export default {
       })
     },
     openPopover() {
-      const instance = new PopoverConstructor({
-        propsData: this.getInnerProps(),
-        mounted() {
-          this.$nextTick(() => {
-            instance.innerVisible = true
-          })
-        }
-      })
-
-      const promise = instance.closedPromise()
+      const service = popoverAsService(Popover)
+      const props = this.getInnerProps()
+      const promise = service.summon({}, this.getInnerProps(), props.reference)
+      this.instance = service.current
 
       if (this.autoLoading) {
-        instance.$on('update:loading', (loading) => {
+        this.instance.$on('update:loading', (loading) => {
           this.confirmLoading = loading
         })
       }
 
-      this.instance = instance
-      promise.then(({ type }) => {
-        instance.$destroy()
+      promise.then(({type}) => {
         this.$emit(type)
         this.instance = null
-        this.confirmLoading = false
       })
-
-      instance.$mount()
     },
     open() {
       if (this.instance) {

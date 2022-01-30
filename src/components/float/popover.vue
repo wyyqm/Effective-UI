@@ -19,6 +19,9 @@ export default {
   name: 'ef-popover',
   props: {
     ...BasePopover.props,
+    beforeClose: {
+      type: Function
+    },
     state: {
       type: Object
     },
@@ -65,7 +68,13 @@ export default {
     },
     updateVisible(value) {
       if (!value) {
-        this.state.cancel()
+        if (this.beforeClose) {
+          this.beforeClose(() => {
+            this.state.cancel()
+          })
+        } else {
+          this.state.cancel()
+        }
       }
     },
     afterClose(payload) {
