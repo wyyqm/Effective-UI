@@ -3,7 +3,6 @@ import Vue from 'vue'
 import ElementUI from '@tuya-fe/full-ui'
 import '@tuya-fe/full-ui/lib/theme-chalk/index.css'
 import '../examples/assets/common.css'
-import '../examples/assets/commonPage.less'
 import axios from 'axios'
 import '../utils/index'
 Vue.use(ElementUI, { size: 'small' })
