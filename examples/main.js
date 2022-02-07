@@ -5,7 +5,6 @@ import ElementUI from '@tuya-fe/full-ui'
 import TyAsyncButton from '@tuya-fe/ty-async-button'
 import '@tuya-fe/full-ui/lib/theme-chalk/index.css'
 import './assets/common.css'
-import './assets/commonPage.less'
 import axios from 'axios'
 import '../utils/index'
 
